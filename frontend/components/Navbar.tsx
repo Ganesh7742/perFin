@@ -11,6 +11,7 @@ const links = [
   { href: '/projection', label: 'Projection' },
   { href: '/goals', label: 'Goals' },
   { href: '/chat', label: 'AI Advisor' },
+  { href: '/learn', label: 'Learn' },
 ];
 
 const OLIVE = '#A35E47';
