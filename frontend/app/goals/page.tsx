@@ -6,129 +6,111 @@ import { formatINR } from '@/lib/utils';
 import Navbar from '@/components/Navbar';
 import { Target, CheckCircle, AlertTriangle, TrendingUp, Calendar } from 'lucide-react';
 
+const OLIVE = '#A35E47';
+const DEEP  = '#000000';
+const SAGE  = '#B57A68';
+const BG    = '#FAFAFA';
+const CARD  = '#FFFFFF';
+const BORDER= '#9C9A9A';
+const SEC   = '#464646';
+const MUTED = '#9C9A9A';
+
 export default function GoalsPage() {
   const router = useRouter();
   const { analysis } = usePerFinStore();
-
-  useEffect(() => {
-    if (!analysis) router.push('/input');
-  }, [analysis, router]);
-
+  useEffect(() => { if (!analysis) router.push('/input'); }, [analysis, router]);
   if (!analysis) return null;
 
   const { goals } = analysis;
+  const card = { background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6 } as const;
+  const secLabel = { fontSize: 10, fontWeight: 700 as const, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: MUTED };
 
-  if (goals.length === 0) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingTop: 80 }}>
-        <Navbar />
-        <div style={{ maxWidth: 600, margin: '80px auto', textAlign: 'center', padding: '0 24px' }}>
-          <Target size={48} color="#818cf8" style={{ marginBottom: 20 }} />
-          <h2 style={{ marginBottom: 12 }}>No goals yet</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>Add goals in your financial profile to see planning details.</p>
-          <button className="btn-accent" onClick={() => router.push('/input')}>Update Profile →</button>
+  if (goals.length === 0) return (
+    <div style={{ minHeight: '100vh', background: BG, paddingTop: 76 }}>
+      <Navbar />
+      <div style={{ maxWidth: 480, margin: '80px auto', textAlign: 'center', padding: '0 24px' }}>
+        <div style={{ width: 44, height: 44, borderRadius: 6, background: 'rgba(99,107,47,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+          <Target size={22} color={OLIVE} />
         </div>
+        <h2 style={{ marginBottom: 8, color: DEEP, fontWeight: 600 }}>No goals yet</h2>
+        <p style={{ color: SEC, marginBottom: 22, fontSize: 13 }}>Add goals in your financial profile to see planning details.</p>
+        <button className="btn-accent" onClick={() => router.push('/input')}>Update Profile →</button>
       </div>
-    );
-  }
-
-  const priorityColor = (p: string) => p === 'High' ? '#ef4444' : p === 'Medium' ? '#f59e0b' : '#10b981';
+    </div>
+  );
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingTop: 80 }}>
+    <div style={{ minHeight: '100vh', background: BG, paddingTop: 76 }}>
       <Navbar />
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 24px' }}>
-
-        <div style={{ marginBottom: 36 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>
-            Goal <span className="gradient-text">Planning</span>
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-            Exact SIP amounts needed to achieve every financial goal
-          </p>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 24px' }}>
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 600, color: DEEP, letterSpacing: '-0.02em', marginBottom: 3 }}>Goal <span style={{ color: OLIVE }}>Planning</span></h1>
+          <p style={{ color: MUTED, fontSize: 13 }}>Exact SIP amounts needed to achieve every financial goal</p>
         </div>
 
-        {/* Summary bar */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-[14px] mb-7">
+        {/* Summary */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 20 }}>
           {[
-            { label: 'Total Goals', val: goals.length, unit: '' },
-            { label: 'Achievable', val: goals.filter(g => g.feasibility === 'Achievable').length, unit: '' },
-            { label: 'Total Target', val: formatINR(goals.reduce((s, g) => s + g.target_amount, 0)), unit: '' },
-            { label: 'Total Monthly SIP', val: formatINR(goals.reduce((s, g) => s + g.monthly_investment_needed, 0)), unit: '/mo' },
+            { label: 'Total Goals', val: goals.length },
+            { label: 'Achievable', val: goals.filter(g => g.feasibility === 'Achievable').length },
+            { label: 'Total Target', val: formatINR(goals.reduce((s, g) => s + g.target_amount, 0)) },
+            { label: 'Monthly SIP', val: formatINR(goals.reduce((s, g) => s + g.monthly_investment_needed, 0)) },
           ].map((s, i) => (
-            <div key={i} className="glass-card" style={{ padding: '18px 20px', textAlign: 'center' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#818cf8' }}>{s.val}{s.unit}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, letterSpacing: '0.04em' }}>{s.label.toUpperCase()}</div>
+            <div key={i} style={{ ...card, padding: '14px 18px', textAlign: 'center' }}>
+              <div style={{ fontSize: 19, fontWeight: 700, color: OLIVE }}>{s.val}</div>
+              <div style={{ ...secLabel, marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Goal Cards */}
-        <div className="grid gap-5">
+        <div style={{ display: 'grid', gap: 14 }}>
           {goals.map((g, i) => {
-            const isAchievable = g.feasibility === 'Achievable';
-            const progressPct = Math.min(100, (g.current_savings_for_goal / g.target_amount) * 100);
+            const ok = g.feasibility === 'Achievable';
+            const pct = Math.min(100, (g.current_savings_for_goal / g.target_amount) * 100);
             return (
-              <div key={i} className="glass-card fade-up" style={{ padding: 28, animationDelay: `${i * 0.1}s` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{
-                      width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: isAchievable ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
-                    }}>
-                      {isAchievable ? <CheckCircle size={22} color="#10b981" /> : <AlertTriangle size={22} color="#f59e0b" />}
+              <div key={i} style={{ ...card, padding: 22, borderLeft: `3px solid ${ok ? OLIVE : SAGE}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 38, height: 38, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: ok ? 'rgba(99,107,47,0.1)' : 'rgba(143,158,88,0.14)' }}>
+                      {ok ? <CheckCircle size={19} color={OLIVE} /> : <AlertTriangle size={19} color={SAGE} />}
                     </div>
                     <div>
-                      <h2 style={{ fontSize: 20, fontWeight: 800 }}>{g.goal_type}</h2>
-                      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                        <span className={`badge ${isAchievable ? 'badge-success' : 'badge-warning'}`}>{g.feasibility}</span>
-                      </div>
+                      <h2 style={{ fontSize: 16, fontWeight: 600, color: DEEP }}>{g.goal_type}</h2>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4, marginTop: 3, display: 'inline-block', background: ok ? 'rgba(99,107,47,0.1)' : 'rgba(143,158,88,0.15)', color: ok ? '#3A4A18' : '#464646' }}>{g.feasibility}</span>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 28, fontWeight: 900, color: '#818cf8' }}>{formatINR(g.target_amount)}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-                      <Calendar size={12} /> {g.time_horizon_years} years
-                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: OLIVE }}>{formatINR(g.target_amount)}</div>
+                    <div style={{ fontSize: 11, color: MUTED, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end', marginTop: 3 }}><Calendar size={10} /> {g.time_horizon_years} years</div>
                   </div>
                 </div>
 
-                {/* Progress */}
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Current progress</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#818cf8' }}>{progressPct.toFixed(1)}%</span>
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <span style={{ fontSize: 11, color: MUTED }}>Current progress</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: OLIVE }}>{pct.toFixed(1)}%</span>
                   </div>
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${progressPct}%` }} />
-                  </div>
+                  <div className="progress-bar"><div className="progress-fill" style={{ width: `${pct}%` }} /></div>
                 </div>
 
-                {/* Metrics Grid */}
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-[14px]">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
                   {[
-                    { icon: <TrendingUp size={14} />, label: 'Required Monthly SIP', val: formatINR(g.monthly_investment_needed), color: '#818cf8' },
-                    { icon: <TrendingUp size={14} />, label: 'Current Monthly SIP', val: formatINR(g.current_monthly_investment), color: '#94a3b8' },
-                    { icon: <Target size={14} />, label: 'Projected Corpus', val: formatINR(g.projected_corpus), color: '#10b981' },
-                    ...(!isAchievable ? [{ icon: <AlertTriangle size={14} />, label: 'Monthly Shortfall', val: `+${formatINR(g.shortfall_monthly)}`, color: '#f59e0b' }] : []),
+                    { icon: <TrendingUp size={12} />, label: 'Required Monthly SIP', val: formatINR(g.monthly_investment_needed), color: OLIVE },
+                    { icon: <TrendingUp size={12} />, label: 'Current Monthly SIP', val: formatINR(g.current_monthly_investment), color: SEC },
+                    { icon: <Target size={12} />, label: 'Projected Corpus', val: formatINR(g.projected_corpus), color: OLIVE },
+                    ...(!ok ? [{ icon: <AlertTriangle size={12} />, label: 'Monthly Shortfall', val: `+${formatINR(g.shortfall_monthly)}`, color: SAGE }] : []),
                   ].map((m, j) => (
-                    <div key={j} style={{ background: 'var(--bg-secondary)', borderRadius: 10, padding: '14px', border: '1px solid var(--border)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--text-muted)' }}>
-                        {m.icon}
-                        <span style={{ fontSize: 11, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{m.label}</span>
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: m.color }}>{m.val}</div>
+                    <div key={j} style={{ background: BG, borderRadius: 5, padding: '11px', border: `1px solid ${BORDER}` }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5, color: MUTED }}>{m.icon}<span style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{m.label}</span></div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: m.color }}>{m.val}</div>
                     </div>
                   ))}
                 </div>
 
-                {!isAchievable && (
-                  <div style={{
-                    marginTop: 16, padding: '12px 16px', borderRadius: 10,
-                    background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
-                    fontSize: 13, color: '#f59e0b',
-                  }}>
-                    💡 Increase monthly SIP by <strong>{formatINR(g.shortfall_monthly)}</strong> to make this goal achievable on time.
+                {!ok && (
+                  <div style={{ marginTop: 14, padding: '9px 12px', borderRadius: 5, background: 'rgba(143,158,88,0.08)', border: `1px solid rgba(143,158,88,0.3)`, fontSize: 12, color: '#464646' }}>
+                    Increase monthly SIP by <strong>{formatINR(g.shortfall_monthly)}</strong> to make this goal achievable on time.
                   </div>
                 )}
               </div>

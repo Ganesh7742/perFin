@@ -13,116 +13,101 @@ const links = [
   { href: '/chat', label: 'AI Advisor' },
 ];
 
+const OLIVE = '#A35E47';
+const DEEP  = '#000000';
+const BG    = '#FAFAFA';
+const CARD  = '#FFFFFF';
+const BORDER= '#9C9A9A';
+const SEC   = '#464646';
+const MUTED = '#9C9A9A';
+
 export default function Navbar() {
   const pathname = usePathname();
-  const { isAuthenticated, logout, user } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
-    setMobileMenuOpen(false);
-  };
+  const handleLogout = () => { logout(); router.push('/login'); setMobileMenuOpen(false); };
+  const isActive = (href: string) => pathname === href;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#0a0a0f]/85 backdrop-blur-md border-b border-white/10">
-      <div className="px-4 md:px-8 h-[60px] flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 no-underline">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center">
-            <TrendingUp size={16} color="white" />
-          </div>
-          <span className="font-bold text-base text-slate-100">PerFin<span className="text-indigo-400">AI</span></span>
-        </Link>
-        
-        {/* Mobile menu button */}
-        <button 
-          className="md:hidden p-2 text-slate-300 hover:text-white"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: CARD, borderBottom: `1px solid ${BORDER}` }}>
+      <div style={{ padding: '0 32px', height: 58, display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 1200, margin: '0 auto' }}>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-3 items-center">
+        {/* Logo */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+          <div style={{ width: 28, height: 28, borderRadius: 5, background: OLIVE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TrendingUp size={14} color={BG} />
+          </div>
+          <span style={{ fontWeight: 600, fontSize: 14, color: DEEP, letterSpacing: '-0.01em' }}>
+            PerFin<span style={{ color: OLIVE }}>AI</span>
+          </span>
+        </Link>
+
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-1">
           {isAuthenticated ? (
             <>
               {links.map(l => (
-                <Link key={l.href} href={l.href} 
-                  className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
-                    pathname === l.href ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-400 hover:text-slate-200'
-                  }`}
-                >
+                <Link key={l.href} href={l.href} style={{
+                  padding: '5px 12px', borderRadius: 5, fontSize: 13, fontWeight: 500,
+                  textDecoration: 'none', letterSpacing: '0.01em',
+                  color: isActive(l.href) ? OLIVE : MUTED,
+                  background: isActive(l.href) ? 'rgba(163,94,71,0.1)' : 'transparent',
+                }}>
                   {l.label}
                 </Link>
               ))}
-              <Link href="/input" className="ml-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold text-white bg-gradient-to-br from-indigo-500 to-indigo-400 hover:opacity-90 transition-opacity">
+              <Link href="/input" style={{ marginLeft: 8, padding: '5px 14px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', color: BG, background: OLIVE }}>
                 Update Profile
               </Link>
-              <button 
-                onClick={handleLogout}
-                className="ml-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-colors"
-              >
-                <LogOut size={14} />
-                Sign Out
+              <button onClick={handleLogout} style={{ marginLeft: 6, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 5, fontSize: 13, fontWeight: 500, background: 'rgba(0,0,0,0.08)', color: '#000000', border: 'none', cursor: 'pointer' }}>
+                <LogOut size={12} /> Sign Out
               </button>
             </>
           ) : (
             <>
-              <Link href="/login" className="px-3.5 py-1.5 rounded-lg text-[13px] font-medium text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
-                <LogIn size={14} />
-                Sign In
+              <Link href="/login" style={{ padding: '5px 14px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', color: SEC, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <LogIn size={13} /> Sign In
               </Link>
-              <Link href="/signup" className="ml-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1.5">
-                <UserPlus size={14} />
-                Sign Up
+              <Link href="/signup" style={{ padding: '5px 14px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', color: BG, background: OLIVE, display: 'flex', alignItems: 'center', gap: 5, marginLeft: 4 }}>
+                <UserPlus size={13} /> Sign Up
               </Link>
             </>
           )}
         </div>
+
+        {/* Mobile toggle */}
+        <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: MUTED }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden">
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0a0a0f] px-4 py-4 flex flex-col gap-2">
+        <div style={{ borderTop: `1px solid ${BORDER}`, background: CARD, padding: '10px 20px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           {isAuthenticated ? (
             <>
               {links.map(l => (
-                <Link key={l.href} href={l.href} 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    pathname === l.href ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-400'
-                  }`}
-                >
+                <Link key={l.href} href={l.href} onClick={() => setMobileMenuOpen(false)}
+                  style={{ padding: '9px 10px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', color: isActive(l.href) ? OLIVE : MUTED, background: isActive(l.href) ? 'rgba(99,107,47,0.08)' : 'transparent' }}>
                   {l.label}
                 </Link>
               ))}
-              <div className="h-px bg-white/10 my-2"></div>
-              <Link href="/input" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-br from-indigo-500 to-indigo-400 text-center"
-              >
-                Update Profile
-              </Link>
-              <button 
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-red-400 bg-red-400/10"
-              >
-                <LogOut size={16} />
-                Sign Out
+              <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
+              <Link href="/input" onClick={() => setMobileMenuOpen(false)} style={{ padding: '9px 10px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', textAlign: 'center', color: BG, background: OLIVE }}>Update Profile</Link>
+              <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 5, fontSize: 13, color: '#8B3A2A', background: 'rgba(139,58,42,0.08)', border: 'none', cursor: 'pointer' }}>
+                <LogOut size={13} /> Sign Out
               </button>
             </>
           ) : (
-            <div className="flex flex-col gap-2">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 bg-slate-800/50 flex items-center justify-center gap-2">
-                <LogIn size={16} />
-                Sign In
+            <>
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ padding: '9px', borderRadius: 5, fontSize: 13, textDecoration: 'none', textAlign: 'center', color: SEC, background: '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <LogIn size={13} /> Sign In
               </Link>
-              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-indigo-500 flex items-center justify-center gap-2">
-                <UserPlus size={16} />
-                Sign Up
+              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} style={{ padding: '9px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', textAlign: 'center', color: BG, background: OLIVE, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <UserPlus size={13} /> Sign Up
               </Link>
-            </div>
+            </>
           )}
         </div>
       )}

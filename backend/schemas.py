@@ -118,6 +118,7 @@ class AnalysisResponse(BaseModel):
     ai_summary: str
     insurance_advice: Optional[InsuranceAdvice] = None
     tax_advice: Optional[TaxAdvice] = None
+    cibil_advice: Optional[CibilAdvice] = None
 
 class UserCreate(BaseModel):
     email: EmailStr
