@@ -41,7 +41,7 @@ def send_otp_email(to_email: str, otp: str):
         html_part = MIMEText(html_content, "html")
         msg.attach(html_part)
 
-        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+        server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10)
         server.starttls()
         server.login(SMTP_USER, SMTP_PASS)
         server.sendmail(SMTP_USER, to_email, msg.as_string())

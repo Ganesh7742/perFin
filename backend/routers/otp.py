@@ -48,7 +48,14 @@ async def send_otp(request: OTPSendRequest, otps: AsyncIOMotorCollection = Depen
     # Send via async executor so it doesn't block the event loop
     import asyncio
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, send_otp_email, request.email, otp_code)
+    try:
+        result = await asyncio.wait_for(
+            loop.run_in_executor(None, send_otp_email, request.email, otp_code),
+            timeout=12.0
+        )
+    except asyncio.TimeoutError:
+        print(f"Timeout sending email to {request.email}")
+        result = False
     
     print(f"Email sent with result: {result}")
     
