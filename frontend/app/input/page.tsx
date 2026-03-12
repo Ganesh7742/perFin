@@ -18,16 +18,16 @@ const MUTED = '#9C9A9A';
 const STEPS = ['Personal Info', 'Income & Expenses', 'Assets', 'Liabilities', 'Credit & Tax', 'Goals'];
 
 const defaultProfile: FinancialProfile = {
-  name: '', age: 28, occupation: '', location: '', marital_status: 'Single',
-  monthly_income: 80000,
-  housing_expense: 12000, food_expense: 8000, transport_expense: 4000,
-  utilities_expense: 2000, entertainment_expense: 3000, other_expense: 2000,
-  current_savings: 300000, stocks: 100000, mutual_funds: 150000,
-  gold: 50000, crypto: 0, real_estate: 0,
+  name: '', age: 0, occupation: '', location: '', marital_status: 'Single',
+  monthly_income: 0,
+  housing_expense: 0, food_expense: 0, transport_expense: 0,
+  utilities_expense: 0, entertainment_expense: 0, other_expense: 0,
+  current_savings: 0, stocks: 0, mutual_funds: 0,
+  gold: 0, crypto: 0, real_estate: 0,
   total_loans: 0, credit_card_debt: 0, monthly_loan_emi: 0,
-  dependents: 0, existing_insurance: 0, total_deductions: 50000,
-  cibil_score: 750, credit_utilization: 20,
-  goals: [{ goal_type: 'House', target_amount: 5000000, time_horizon_years: 8, current_savings_for_goal: 0, monthly_investment: 10000, priority: 'High' }],
+  dependents: 0, existing_insurance: 0, total_deductions: 0,
+  cibil_score: 750, credit_utilization: 0,
+  goals: [{ goal_type: 'Home', target_amount: 0, time_horizon_years: 0, current_savings_for_goal: 0, monthly_investment: 0, priority: 'Medium' }],
 };
 
 function InputGroup({ label, name, value, onChange, type = 'number', prefix = '₹', placeholder = '0' }: {
@@ -141,54 +141,54 @@ export default function InputPage() {
 
           {step === 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2"><InputGroup label="Full Name" name="name" value={profile.name} onChange={update} type="text" prefix="" placeholder="Ganesh Kumar" /></div>
-              <InputGroup label="Age" name="age" value={profile.age} onChange={update} prefix="" placeholder="28" />
-              <InputGroup label="Occupation" name="occupation" value={profile.occupation} onChange={update} type="text" prefix="" placeholder="Software Engineer" />
-              <InputGroup label="City" name="location" value={profile.location} onChange={update} type="text" prefix="" placeholder="Bangalore" />
+              <div className="md:col-span-2"><InputGroup label="Full Name" name="name" value={profile.name} onChange={update} type="text" prefix="" placeholder="Name" /></div>
+              <InputGroup label="Age" name="age" value={profile.age || ''} onChange={update} prefix="" placeholder="Age" />
+              <InputGroup label="Occupation" name="occupation" value={profile.occupation} onChange={update} type="text" prefix="" placeholder="Occupation" />
+              <InputGroup label="City" name="location" value={profile.location} onChange={update} type="text" prefix="" placeholder="City" />
               <SelectGroup label="Marital Status" name="marital_status" value={profile.marital_status} onChange={update} options={['Single', 'Married', 'Divorced', 'Widowed']} />
-              <InputGroup label="Dependents" name="dependents" value={profile.dependents} onChange={update} prefix="" placeholder="0" />
+              <InputGroup label="Dependents" name="dependents" value={profile.dependents || ''} onChange={update} prefix="" placeholder="Number of dependents" />
             </div>
           )}
 
           {step === 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2"><p style={secHead}>Monthly Income</p><InputGroup label="Monthly Take-Home Income" name="monthly_income" value={profile.monthly_income} onChange={update} /></div>
+              <div className="md:col-span-2"><p style={secHead}>Monthly Income</p><InputGroup label="Monthly Take-Home Income" name="monthly_income" value={profile.monthly_income || ''} onChange={update} placeholder="Amount" /></div>
               <div className="md:col-span-2"><p style={secHead}>Monthly Expenses</p></div>
-              <InputGroup label="Housing / Rent" name="housing_expense" value={profile.housing_expense} onChange={update} />
-              <InputGroup label="Food & Groceries" name="food_expense" value={profile.food_expense} onChange={update} />
-              <InputGroup label="Transport" name="transport_expense" value={profile.transport_expense} onChange={update} />
-              <InputGroup label="Utilities" name="utilities_expense" value={profile.utilities_expense} onChange={update} />
-              <InputGroup label="Entertainment" name="entertainment_expense" value={profile.entertainment_expense} onChange={update} />
-              <InputGroup label="Other Expenses" name="other_expense" value={profile.other_expense} onChange={update} />
-              <div className="md:col-span-2"><InputGroup label="Annual Tax Deductions (80C etc.)" name="total_deductions" value={profile.total_deductions} onChange={update} /></div>
+              <InputGroup label="Housing / Rent" name="housing_expense" value={profile.housing_expense || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Food & Groceries" name="food_expense" value={profile.food_expense || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Transport" name="transport_expense" value={profile.transport_expense || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Utilities" name="utilities_expense" value={profile.utilities_expense || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Entertainment" name="entertainment_expense" value={profile.entertainment_expense || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Other Expenses" name="other_expense" value={profile.other_expense || ''} onChange={update} placeholder="Amount" />
+              <div className="md:col-span-2"><InputGroup label="Annual Tax Deductions (80C etc.)" name="total_deductions" value={profile.total_deductions || ''} onChange={update} placeholder="Amount" /></div>
             </div>
           )}
 
           {step === 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <InputGroup label="Cash / Savings (FD, Bank)" name="current_savings" value={profile.current_savings} onChange={update} />
-              <InputGroup label="Stocks (Direct Equity)" name="stocks" value={profile.stocks} onChange={update} />
-              <InputGroup label="Mutual Funds" name="mutual_funds" value={profile.mutual_funds} onChange={update} />
-              <InputGroup label="Gold (Physical / Digital)" name="gold" value={profile.gold} onChange={update} />
-              <InputGroup label="Crypto" name="crypto" value={profile.crypto} onChange={update} />
-              <InputGroup label="Real Estate (Market Value)" name="real_estate" value={profile.real_estate} onChange={update} />
-              <div className="md:col-span-2"><InputGroup label="Existing Insurance Cover" name="existing_insurance" value={profile.existing_insurance} onChange={update} /></div>
+              <InputGroup label="Cash / Savings (FD, Bank)" name="current_savings" value={profile.current_savings || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Stocks (Direct Equity)" name="stocks" value={profile.stocks || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Mutual Funds" name="mutual_funds" value={profile.mutual_funds || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Gold (Physical / Digital)" name="gold" value={profile.gold || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Crypto" name="crypto" value={profile.crypto || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Real Estate (Market Value)" name="real_estate" value={profile.real_estate || ''} onChange={update} placeholder="Amount" />
+              <div className="md:col-span-2"><InputGroup label="Existing Insurance Cover" name="existing_insurance" value={profile.existing_insurance || ''} onChange={update} placeholder="Amount" /></div>
             </div>
           )}
 
           {step === 3 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <InputGroup label="Total Loans Outstanding" name="total_loans" value={profile.total_loans} onChange={update} />
-              <InputGroup label="Credit Card Debt" name="credit_card_debt" value={profile.credit_card_debt} onChange={update} />
-              <div className="md:col-span-2"><InputGroup label="Monthly EMI (Total)" name="monthly_loan_emi" value={profile.monthly_loan_emi} onChange={update} /></div>
+              <InputGroup label="Total Loans Outstanding" name="total_loans" value={profile.total_loans || ''} onChange={update} placeholder="Amount" />
+              <InputGroup label="Credit Card Debt" name="credit_card_debt" value={profile.credit_card_debt || ''} onChange={update} placeholder="Amount" />
+              <div className="md:col-span-2"><InputGroup label="Monthly EMI (Total)" name="monthly_loan_emi" value={profile.monthly_loan_emi || ''} onChange={update} placeholder="Amount" /></div>
             </div>
           )}
 
           {step === 4 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="md:col-span-2"><p style={secHead}>Credit Health</p></div>
-              <InputGroup label="CIBIL Score" name="cibil_score" value={profile.cibil_score} onChange={update} prefix="" placeholder="750" />
-              <InputGroup label="Credit Utilization (%)" name="credit_utilization" value={profile.credit_utilization} onChange={update} prefix="%" placeholder="30" />
+              <InputGroup label="CIBIL Score" name="cibil_score" value={profile.cibil_score || ''} onChange={update} prefix="" placeholder="750" />
+              <InputGroup label="Credit Utilization (%)" name="credit_utilization" value={profile.credit_utilization || ''} onChange={update} prefix="%" placeholder="30" />
             </div>
           )}
 
@@ -215,10 +215,10 @@ export default function InputPage() {
                         {['High', 'Medium', 'Low'].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </div>
-                    <div><label className="input-label">Target Amount (₹)</label><input className="input-field" type="number" value={g.target_amount} onChange={e => updateGoal(i, 'target_amount', e.target.value)} /></div>
-                    <div><label className="input-label">Time Horizon (Years)</label><input className="input-field" type="number" value={g.time_horizon_years} onChange={e => updateGoal(i, 'time_horizon_years', e.target.value)} /></div>
-                    <div><label className="input-label">Current Savings for Goal (₹)</label><input className="input-field" type="number" value={g.current_savings_for_goal} onChange={e => updateGoal(i, 'current_savings_for_goal', e.target.value)} /></div>
-                    <div><label className="input-label">Monthly Investment (₹)</label><input className="input-field" type="number" value={g.monthly_investment} onChange={e => updateGoal(i, 'monthly_investment', e.target.value)} /></div>
+                    <div><label className="input-label">Target Amount (₹)</label><input className="input-field" type="number" value={g.target_amount || ''} onChange={e => updateGoal(i, 'target_amount', e.target.value)} placeholder="Amount" /></div>
+                    <div><label className="input-label">Time Horizon (Years)</label><input className="input-field" type="number" value={g.time_horizon_years || ''} onChange={e => updateGoal(i, 'time_horizon_years', e.target.value)} placeholder="Years" /></div>
+                    <div><label className="input-label">Current Savings for Goal (₹)</label><input className="input-field" type="number" value={g.current_savings_for_goal || ''} onChange={e => updateGoal(i, 'current_savings_for_goal', e.target.value)} placeholder="Amount" /></div>
+                    <div><label className="input-label">Monthly Investment (₹)</label><input className="input-field" type="number" value={g.monthly_investment || ''} onChange={e => updateGoal(i, 'monthly_investment', e.target.value)} placeholder="Amount" /></div>
                   </div>
                 </div>
               ))}
