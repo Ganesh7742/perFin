@@ -16,6 +16,7 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordVisible, setShowPasswordVisible] = useState(false);
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -125,7 +126,7 @@ function LoginContent() {
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
               <div className="google-input-wrapper" style={{ marginTop: 20 }}>
                 <input
-                  type="password"
+                  type={showPasswordVisible ? "text" : "password"}
                   className="google-input"
                   placeholder="Enter your password"
                   value={password}
@@ -135,7 +136,12 @@ function LoginContent() {
                 />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-                  <input type="checkbox" id="show" checked={false} onChange={() => {}} />
+                  <input 
+                    type="checkbox" 
+                    id="show" 
+                    checked={showPasswordVisible} 
+                    onChange={() => setShowPasswordVisible(!showPasswordVisible)} 
+                  />
                   <label htmlFor="show" style={{ fontSize: 14 }}>Show password</label>
               </div>
 

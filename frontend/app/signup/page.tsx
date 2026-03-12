@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [step, setStep] = useState<SignupStep>('EMAIL');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -164,7 +165,7 @@ export default function SignupPage() {
             <form onSubmit={handleFinalizeSignup} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
               <div className="google-input-wrapper">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   className="google-input"
                   placeholder="Password"
                   value={password}
@@ -175,13 +176,22 @@ export default function SignupPage() {
               </div>
               <div className="google-input-wrapper" style={{ marginTop: 24 }}>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   className="google-input"
                   placeholder="Confirm password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+                <input 
+                  type="checkbox" 
+                  id="show-signup" 
+                  checked={showPassword} 
+                  onChange={() => setShowPassword(!showPassword)} 
+                />
+                <label htmlFor="show-signup" style={{ fontSize: 14 }}>Show password</label>
               </div>
               <p style={{ fontSize: 12, color: '#5f6368', marginTop: 8 }}>
                 Use 8 or more characters with a mix of letters, numbers & symbols
