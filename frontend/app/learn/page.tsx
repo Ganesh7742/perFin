@@ -15,7 +15,7 @@ export default function LearnPage() {
   const [activeTab, setActiveTab] = useState('Basics');
 
   const categories = [
-    { name: 'Basics', icon: Lightbulb },
+    { name: 'Insurance', icon: Lightbulb },
     { name: 'Investing', icon: PieChart },
     { name: 'Taxation', icon: ShieldCheck },
     { name: 'Planning', icon: BookOpen },
