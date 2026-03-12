@@ -41,11 +41,27 @@ def send_otp_email(to_email: str, otp: str):
         html_part = MIMEText(html_content, "html")
         msg.attach(html_part)
 
+        import time
+        start = time.time()
+        print(f"Connecting to SMTP {SMTP_HOST}:{SMTP_PORT}...")
         server = smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10)
+        print(f"Connected in {time.time() - start:.2f}s. Starting TLS...")
+        
+        tls_start = time.time()
         server.starttls()
+        print(f"TLS started in {time.time() - tls_start:.2f}s. Logging in...")
+        
+        login_start = time.time()
         server.login(SMTP_USER, SMTP_PASS)
+        print(f"Logged in in {time.time() - login_start:.2f}s. Sending mail...")
+        
+        send_start = time.time()
         server.sendmail(SMTP_USER, to_email, msg.as_string())
+        print(f"Mail sent in {time.time() - send_start:.2f}s. Quitting...")
+        
+        quit_start = time.time()
         server.quit()
+        print(f"SMTP quit in {time.time() - quit_start:.2f}s. Total: {time.time() - start:.2f}s")
         
         return True
     except Exception as e:
