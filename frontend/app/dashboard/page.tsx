@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePerFinStore } from '@/lib/store';
 import { formatINR } from '@/lib/utils';
@@ -39,8 +39,18 @@ function ScoreArc({ score }: { score: number }) {
 export default function DashboardPage() {
   const router = useRouter();
   const { analysis } = usePerFinStore();
-  useEffect(() => { if (!analysis) router.push('/input'); }, [analysis, router]);
-  if (!analysis) return null;
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    usePerFinStore.persist.onFinishHydration(() => setHasHydrated(true));
+    setHasHydrated(usePerFinStore.persist.hasHydrated());
+  }, []);
+
+  useEffect(() => { 
+    if (hasHydrated && !analysis) router.push('/input'); 
+  }, [analysis, hasHydrated, router]);
+  
+  if (!hasHydrated || !analysis) return null;
 
   const { health_score, monthly_surplus, net_worth, total_assets, total_liabilities, ai_summary, projections, insurance_advice, tax_advice, cibil_advice } = analysis;
 

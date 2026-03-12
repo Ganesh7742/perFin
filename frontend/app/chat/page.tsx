@@ -29,17 +29,34 @@ const SUGGESTIONS = [
 export default function ChatPage() {
   const router = useRouter();
   const { analysis, profile } = usePerFinStore();
-  const [messages, setMessages] = useState<Message[]>([{
-    role: 'assistant',
-    content: profile
-      ? `Hello ${profile.name}! I'm your AI Financial Advisor. I have access to your financial profile — income of ${formatINR(profile.monthly_income)}/month, net worth of ${formatINR(analysis?.net_worth ?? 0)}, and ${analysis?.goals.length ?? 0} goal(s). Ask me anything about your finances.`
-      : `Hello! I'm your AI Financial Advisor. Please build your financial profile first to get personalized advice.`,
-  }]);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    usePerFinStore.persist.onFinishHydration(() => setHasHydrated(true));
+    setHasHydrated(usePerFinStore.persist.hasHydrated());
+  }, []);
+
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (hasHydrated && !messages.length) {
+      setMessages([{
+        role: 'assistant',
+        content: profile
+          ? `Hello ${profile.name}! I'm your AI Financial Advisor. I have access to your financial profile — income of ${formatINR(profile.monthly_income)}/month, net worth of ${formatINR(analysis?.net_worth ?? 0)}, and ${analysis?.goals.length ?? 0} goal(s). Ask me anything about your finances.`
+          : `Hello! I'm your AI Financial Advisor. Please build your financial profile first to get personalized advice.`,
+      }]);
+    }
+  }, [hasHydrated, profile, analysis, messages.length]);
+
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { if (!profile) router.push('/input'); }, [profile, router]);
+  useEffect(() => { 
+    if (hasHydrated && !profile) router.push('/input'); 
+  }, [profile, hasHydrated, router]);
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   const send = async (text?: string) => {
@@ -56,7 +73,7 @@ export default function ChatPage() {
     } finally { setLoading(false); }
   };
 
-  if (!profile) return null;
+  if (!hasHydrated || !profile) return null;
 
   return (
     <div style={{ minHeight: '100vh', background: BG, paddingTop: 76, display: 'flex', flexDirection: 'column' }}>
