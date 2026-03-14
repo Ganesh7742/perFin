@@ -211,16 +211,97 @@ def calculate_tax_advice(profile: FinancialProfileInput) -> TaxAdvice:
     
     if new_tax_val < old_tax:
         regime = "New Tax Regime"
-        savings = old_tax - new_tax_val
+        savings = float(old_tax - new_tax_val)
     else:
         regime = "Old Tax Regime"
-        savings = new_tax_val - old_tax
+        savings = float(new_tax_val - old_tax)
         
     return TaxAdvice(
         old_regime_tax=round(old_tax),
         new_regime_tax=round(new_tax_val),
         recommended_regime=regime,
         savings=round(savings)
+    )
+
+
+def calculate_tax_optimization(profile: FinancialProfileInput) -> "TaxOptimizationResponse":
+    from schemas import TaxRecommendation, TaxOptimizationResponse
+    
+    annual_income = profile.monthly_income * 12
+    # Basic logic for March optimization
+    recommendations = []
+    
+    # 1. Section 80C (Limit 1.5L)
+    # We assume 'total_deductions' is what they are currently claiming in 80C/D mostly
+    # But let's refine: assume 80C is the primary target
+    current_80c = profile.total_deductions 
+    limit_80c = 150000
+    gap_80c = max(0, limit_80c - current_80c)
+    
+    if gap_80c > 500:
+        recommendations.append(TaxRecommendation(
+            instrument="ELSS (Tax Saving Mutual Funds)",
+            section="80C",
+            description="Invest in equity markets with a 3-year lock-in for high returns.",
+            current_amount=current_80c,
+            recommended_addition=gap_80c * 0.6,
+            potential_savings=gap_80c * 0.6 * 0.2 # Assuming 20% slab for simplicity
+        ))
+        recommendations.append(TaxRecommendation(
+            instrument="PPF / VPF",
+            section="80C",
+            description="Safe, government-backed long term savings with fixed interest.",
+            current_amount=current_80c,
+            recommended_addition=gap_80c * 0.4,
+            potential_savings=gap_80c * 0.4 * 0.2
+        ))
+
+    # 2. Section 80D (Health Insurance)
+    if profile.existing_insurance < 10000:
+        recommendations.append(TaxRecommendation(
+            instrument="Comprehensive Health Insurance",
+            section="80D",
+            description="Protect your family while saving additional tax beyond 80C.",
+            current_amount=profile.existing_insurance,
+            recommended_addition=25000,
+            potential_savings=25000 * 0.2
+        ))
+
+    total_add = sum(r.recommended_addition for r in recommendations)
+    total_save = sum(r.potential_savings for r in recommendations)
+    
+    return TaxOptimizationResponse(
+        recommendations=recommendations,
+        total_additional_investment=round(total_add),
+        total_tax_saved=round(total_save)
+    )
+
+
+def calculate_sandbox_simulation(request: "SandboxRequest") -> "SandboxResponse":
+    from schemas import SandboxResponse, ProjectionPoint
+    
+    # Baseline
+    baseline = calculate_projections(request.profile)
+    
+    # Simulated
+    sim_profile = request.profile.model_copy(deep=True)
+    # Exclude specific goals by setting their investment to 0
+    for idx in request.excluded_goal_indices:
+        if 0 <= idx < len(sim_profile.goals):
+            sim_profile.goals[idx].monthly_investment = 0
+            
+    simulated = calculate_projections(sim_profile)
+    
+    # Calculate Impact Analysis (Qualitative placeholder)
+    impact = "By sacrificing short-term goals, your long-term wealth trajectory has steepened significantly."
+    if simulated[-1].net_worth > baseline[-1].net_worth:
+        diff = simulated[-1].net_worth - baseline[-1].net_worth
+        impact += f" You could potentially gain an extra ₹{diff:,.0f} by 2040."
+        
+    return SandboxResponse(
+        baseline_projections=baseline,
+        simulated_projections=simulated,
+        impact_analysis=impact
     )
 
 

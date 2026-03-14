@@ -49,4 +49,14 @@ export async function uploadFinancialDoc(file: File): Promise<any> {
   return data;
 }
 
+export async function getTaxOptimization(): Promise<any> {
+  const { data } = await api.post('/analyze/tax-optimizer');
+  return data;
+}
+
+export async function runSandboxSimulation(request: { profile: FinancialProfile; excluded_goal_indices: number[] }): Promise<any> {
+  const { data } = await api.post('/analyze/sandbox', request);
+  return data;
+}
+
 export default api;

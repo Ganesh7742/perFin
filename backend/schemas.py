@@ -136,3 +136,31 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class TaxRecommendation(BaseModel):
+    instrument: str
+    section: str
+    description: str
+    current_amount: float
+    recommended_addition: float
+    potential_savings: float
+
+
+class TaxOptimizationResponse(BaseModel):
+    recommendations: List[TaxRecommendation]
+    total_additional_investment: float
+    total_tax_saved: float
+    march_deadline_alert: str = "Invest before March 31st to claim these savings!"
+
+
+class SandboxRequest(BaseModel):
+    profile: FinancialProfileInput
+    excluded_goal_indices: List[int] = []
+
+
+class SandboxResponse(BaseModel):
+    baseline_projections: List[ProjectionPoint]
+    simulated_projections: List[ProjectionPoint]
+    impact_analysis: str
+    retirement_age_impact: float = 0

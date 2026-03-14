@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
-from schemas import FinancialProfileInput, AnalysisResponse
+from schemas import (
+    FinancialProfileInput, AnalysisResponse, 
+    TaxOptimizationResponse, SandboxRequest, SandboxResponse
+)
 from financial_engine import (
     calculate_monthly_expenses,
     calculate_total_assets,
@@ -7,17 +10,17 @@ from financial_engine import (
     calculate_net_worth,
     calculate_health_score,
     calculate_projections,
-    calculate_projections,
     calculate_goal_result,
     calculate_insurance_advice,
     calculate_tax_advice,
     calculate_cibil_advice,
+    calculate_tax_optimization,
+    calculate_sandbox_simulation,
 )
 from ai_advisor import get_ai_summary
 from database import get_collection
-from models import build_user_document, build_goal_document
 import uuid
-from auth_utils import decode_access_token, get_current_user
+from auth_utils import get_current_user
 
 router = APIRouter()
 
@@ -35,7 +38,7 @@ async def analyze_profile(profile: FinancialProfileInput, current_user: dict = D
         projections = calculate_projections(profile)
         goal_results = [calculate_goal_result(g, profile) for g in profile.goals]
         
-        # New MVP Advisors
+        # Advisors
         insurance_advice = calculate_insurance_advice(profile)
         tax_advice = calculate_tax_advice(profile)
         cibil_advice = calculate_cibil_advice(profile)
@@ -61,13 +64,18 @@ async def analyze_profile(profile: FinancialProfileInput, current_user: dict = D
 
         # Persist to MongoDB
         users_col = get_collection("users")
+        # Save both analysis and the actual profile for later use in simulators
         await users_col.update_one(
             {"_id": current_user["id"]},
-            {"$set": {"latest_analysis": response.model_dump()}}
+            {"$set": {
+                "latest_analysis": response.model_dump(),
+                "profile": profile.model_dump()
+            }}
         )
 
         return response
     except Exception as e:
+        print(f"[ERROR] Analyze error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/analyze/me", response_model=AnalysisResponse)
@@ -91,12 +99,28 @@ async def export_my_data(current_user: dict = Depends(get_current_user)):
     if not user or "latest_analysis" not in user:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    # Returning structured data suitable for MCP / External ingestion
     return {
         "metadata": {
             "version": "1.0",
             "source": "PerFin AI",
-            "exported_at": str(uuid.uuid4()) # Dynamic export ID
+            "exported_at": str(uuid.uuid4())
         },
         "data": user["latest_analysis"]
     }
+
+@router.post("/analyze/tax-optimizer", response_model=TaxOptimizationResponse)
+async def get_tax_optimization(current_user: dict = Depends(get_current_user)):
+    users_col = get_collection("users")
+    user = await users_col.find_one({"_id": current_user["id"]})
+    if not user or "profile" not in user:
+        raise HTTPException(status_code=404, detail="Please complete your profile first")
+        
+    profile = FinancialProfileInput(**user["profile"])
+    return calculate_tax_optimization(profile)
+
+@router.post("/analyze/sandbox", response_model=SandboxResponse)
+async def get_sandbox_simulation(
+    request: SandboxRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    return calculate_sandbox_simulation(request)
