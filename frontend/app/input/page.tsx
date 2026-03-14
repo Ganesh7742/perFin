@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePerFinStore, FinancialProfile, GoalInput } from '@/lib/store';
 import { analyzeProfile, uploadFinancialDoc } from '@/lib/api';
@@ -78,6 +78,7 @@ function InputGroup({ label, name, value, onChange, type = 'number', prefix = 'â
           onChange={handleChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          onWheel={(e) => (e.target as HTMLInputElement).blur()}
           placeholder={placeholder}
           style={{ paddingLeft: prefix ? 26 : 14 }}
         />
@@ -102,9 +103,15 @@ function SelectGroup({ label, name, value, onChange, options }: {
 
 export default function InputPage() {
   const router = useRouter();
-  const { setProfile, setAnalysis } = usePerFinStore();
+  const { profile: storedProfile, setProfile, setAnalysis } = usePerFinStore();
   const [step, setStep] = useState(0);
   const [profile, setLocalProfile] = useState<FinancialProfile>(defaultProfile);
+
+  useEffect(() => {
+    if (storedProfile) {
+      setLocalProfile(storedProfile);
+    }
+  }, [storedProfile]);
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState('');
