@@ -31,4 +31,13 @@ export async function getProfile(): Promise<AnalysisResult> {
   return data;
 }
 
+export async function deleteProfileData(): Promise<void> {
+  await api.delete('/analyze/me');
+}
+
+export async function exportProfileData(): Promise<any> {
+  const { data } = await api.get('/analyze/export');
+  return data;
+}
+
 export default api;

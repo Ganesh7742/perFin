@@ -77,3 +77,26 @@ async def get_my_analysis(current_user: dict = Depends(get_current_user)):
     if not user or "latest_analysis" not in user:
         raise HTTPException(status_code=404, detail="Analysis not found")
     return AnalysisResponse(**user["latest_analysis"])
+
+@router.delete("/analyze/me")
+async def delete_my_account(current_user: dict = Depends(get_current_user)):
+    users_col = get_collection("users")
+    await users_col.delete_one({"_id": current_user["id"]})
+    return {"message": "Account and all data deleted successfully"}
+
+@router.get("/analyze/export")
+async def export_my_data(current_user: dict = Depends(get_current_user)):
+    users_col = get_collection("users")
+    user = await users_col.find_one({"_id": current_user["id"]})
+    if not user or "latest_analysis" not in user:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    # Returning structured data suitable for MCP / External ingestion
+    return {
+        "metadata": {
+            "version": "1.0",
+            "source": "PerFin AI",
+            "exported_at": str(uuid.uuid4()) # Dynamic export ID
+        },
+        "data": user["latest_analysis"]
+    }

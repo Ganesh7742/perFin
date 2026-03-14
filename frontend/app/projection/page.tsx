@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePerFinStore } from '@/lib/store';
+import { usePerFinStore, ProjectionPoint } from '@/lib/store';
 import { formatINR } from '@/lib/utils';
 import Navbar from '@/components/Navbar';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -39,15 +39,40 @@ export default function ProjectionPage() {
     if (hasHydrated && !analysis) router.push('/input'); 
   }, [analysis, hasHydrated, router]);
   
-  if (!hasHydrated || !analysis) return null;
+  const [returnRate, setReturnRate] = useState(12);
+  const [investRate, setInvestRate] = useState(70);
+  const [computedData, setComputedData] = useState<ProjectionPoint[]>([]);
 
-  const allData = analysis.projections;
+  useEffect(() => {
+    if (analysis) {
+      const data: ProjectionPoint[] = [];
+      let currentNW = analysis.total_assets; // Start with total assets
+      let currentInvested = 0;
+      const annualInvestment = (analysis.monthly_surplus * (investRate / 100)) * 12;
+      const r = returnRate / 100;
+
+      for (let i = 0; i <= 15; i++) {
+        const year = 2025 + i;
+        data.push({
+          year,
+          net_worth: Math.round(currentNW),
+          invested: Math.round(currentInvested),
+        });
+        currentNW = (currentNW * (1 + r)) + annualInvestment;
+        currentInvested += annualInvestment;
+      }
+      setComputedData(data);
+    }
+  }, [analysis, returnRate, investRate]);
+
+  if (!hasHydrated || !analysis || computedData.length === 0) return null;
+
   const milestones = [
-    { year: 2025, val: allData[0]?.net_worth },
-    { year: 2027, val: allData[2]?.net_worth },
-    { year: 2030, val: allData[5]?.net_worth },
-    { year: 2035, val: allData[10]?.net_worth },
-    { year: 2040, val: allData[15]?.net_worth },
+    { year: 2025, val: computedData[0]?.net_worth },
+    { year: 2027, val: computedData[2]?.net_worth },
+    { year: 2030, val: computedData[5]?.net_worth },
+    { year: 2035, val: computedData[10]?.net_worth },
+    { year: 2040, val: computedData[15]?.net_worth },
   ];
 
   const card = { background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6 } as const;
@@ -61,14 +86,43 @@ export default function ProjectionPage() {
           <h1 style={{ fontSize: 22, fontWeight: 600, color: DEEP, letterSpacing: '-0.02em', marginBottom: 3 }}>
             Wealth <span style={{ color: OLIVE }}>Projection</span>
           </h1>
-          <p style={{ color: MUTED, fontSize: 13 }}>Projected net worth growth from 2025 to 2040 at 12% p.a. returns</p>
+          <p style={{ color: MUTED, fontSize: 13 }}>Simulate your net worth growth by adjusting the variables below.</p>
+        </div>
+
+        {/* Sliders */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20, marginBottom: 24 }}>
+          <div style={{ ...card, padding: '16px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: SEC }}>Expected Annual Return</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: OLIVE }}>{returnRate}%</span>
+            </div>
+            <input type="range" min="1" max="30" value={returnRate} onChange={e => setReturnRate(Number(e.target.value))} 
+              style={{ width: '100%', accentColor: OLIVE, cursor: 'pointer' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5, fontSize: 10, color: MUTED }}>
+              <span>1% (Safe)</span>
+              <span>30% (Aggressive)</span>
+            </div>
+          </div>
+
+          <div style={{ ...card, padding: '16px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: SEC }}>Surplus Investment %</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: OLIVE }}>{investRate}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={investRate} onChange={e => setInvestRate(Number(e.target.value))} 
+              style={{ width: '100%', accentColor: OLIVE, cursor: 'pointer' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5, fontSize: 10, color: MUTED }}>
+              <span>0% (Minimum)</span>
+              <span>100% (Disciplined)</span>
+            </div>
+          </div>
         </div>
 
         {/* Chart */}
         <div style={{ ...card, padding: 22, marginBottom: 16 }}>
           <p style={secLabel}>Net Worth Growth (2025 – 2040)</p>
           <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={allData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+            <AreaChart data={computedData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
               <defs>
                 <linearGradient id="nwGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor={OLIVE} stopOpacity={0.22} />
@@ -102,7 +156,7 @@ export default function ProjectionPage() {
             ))}
           </div>
           <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 5, background: 'rgba(99,107,47,0.06)', border: `1px solid ${BORDER}`, fontSize: 12, color: SEC, lineHeight: 1.6 }}>
-            <strong style={{ color: OLIVE }}>Assumption:</strong> 12% annual return · 70% of monthly surplus invested · Existing assets grow at 12%
+            <strong style={{ color: OLIVE }}>Dynamic Assumption:</strong> {returnRate}% annual return · {investRate}% of monthly surplus ({formatINR(analysis.monthly_surplus * (investRate/100))}) invested · Initial wealth of {formatINR(analysis.total_assets)} growing at {returnRate}%.
           </div>
         </div>
       </div>

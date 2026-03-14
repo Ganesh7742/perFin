@@ -2,7 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePerFinStore } from '@/lib/store';
+import { useAuthStore } from '@/lib/auth-store';
 import { formatINR } from '@/lib/utils';
+import { deleteProfileData, exportProfileData } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { TrendingUp, Wallet, BarChart2, Target, AlertCircle, ArrowUpRight, Shield, Zap, CreditCard, Receipt } from 'lucide-react';
@@ -49,6 +51,48 @@ export default function DashboardPage() {
   useEffect(() => { 
     if (hasHydrated && !analysis) router.push('/input'); 
   }, [analysis, hasHydrated, router]);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteData = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete your account? This will erase your email, financial data, and profile. This action cannot be undone.")) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteProfileData();
+      usePerFinStore.getState().reset();
+      useAuthStore.getState().logout();
+      router.push('/');
+    } catch (err) {
+      console.error("Failed to delete account", err);
+      alert("Failed to delete account. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const data = await exportProfileData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `perfin_data_export_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to export data", err);
+      alert("Failed to export data. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
   
   if (!hasHydrated || !analysis) return null;
 
@@ -215,6 +259,56 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Privacy & Control */}
+        <div style={{ ...card, padding: 22, marginTop: 20, background: 'rgba(139,58,42,0.03)', border: `1px solid ${DANGER}40` }}>
+          <div style={{ ...label, color: DANGER }}><Shield size={12} color={DANGER} />Permanently Delete Account</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+            <p style={{ fontSize: 12, color: SEC, maxWidth: 600 }}>
+              Your financial data and account are private. You can choose to permanently remove your entire account (including your email and all profile analysis) from our servers at any time.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button 
+                onClick={handleExportData}
+                disabled={isExporting}
+                style={{ 
+                  background: OLIVE, 
+                  color: BG, 
+                  border: 'none', 
+                  borderRadius: 5, 
+                  padding: '8px 16px', 
+                  fontSize: 11, 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  opacity: isExporting ? 0.5 : 1,
+                  transition: 'all 0.2s'
+                }}
+              >
+                {isExporting ? 'Exporting...' : 'Export My Data (JSON)'}
+              </button>
+              <button 
+                onClick={handleDeleteData}
+                disabled={isDeleting}
+                style={{ 
+                  background: 'transparent', 
+                  color: DANGER, 
+                  border: `1px solid ${DANGER}`, 
+                  borderRadius: 5, 
+                  padding: '8px 16px', 
+                  fontSize: 11, 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  opacity: isDeleting ? 0.5 : 1,
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={e => e.currentTarget.style.background = 'rgba(139,58,42,0.08)'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {isDeleting ? 'Deleting Account...' : 'Delete My Account'}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
