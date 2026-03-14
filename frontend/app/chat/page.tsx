@@ -106,22 +106,23 @@ export default function ChatPage() {
         {/* Messages */}
         <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6, padding: 18, marginBottom: 10, overflowY: 'auto', maxHeight: 420, flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {messages.map((m, i) => (
-            <div key={i} style={{ display: 'flex', gap: 9, flexDirection: 'row', alignItems: 'flex-start' }}>
-              <div style={{ width: 26, height: 26, borderRadius: 4, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: m.role === 'user' ? 'rgba(99,107,47,0.15)' : OLIVE }}>
+            <div key={i} style={{ display: 'flex', gap: 9, flexDirection: m.role === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-start' }}>
+              <div style={{ width: 26, height: 26, borderRadius: 4, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: m.role === 'user' ? 'rgba(163,94,71,0.15)' : OLIVE }}>
                 {m.role === 'user' ? <User size={13} color={OLIVE} /> : <Bot size={13} color={BG} />}
               </div>
               <div style={{ 
                 maxWidth: '82%', 
                 padding: '9px 13px', 
                 borderRadius: 5, 
-                background: m.role === 'user' ? 'rgba(99,107,47,0.07)' : BG, 
-                border: `1px solid ${BORDER}`, 
+                background: m.role === 'user' ? 'rgba(163,94,71,0.05)' : BG, 
+                border: m.role === 'user' ? `1px solid ${OLIVE}40` : `1px solid ${BORDER}`, 
                 fontSize: 13, 
                 lineHeight: 1.75, 
                 color: DEEP, 
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
-                overflowWrap: 'anywhere'
+                overflowWrap: 'anywhere',
+                textAlign: m.role === 'user' ? 'right' : 'left'
               }}>
                 {m.content}
               </div>
