@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from database import connect_db, close_db
-from routers import analyze, chat, auth, otp
+from routers import analyze, chat, auth, otp, upload
 from auth_utils import decode_access_token
 
 
@@ -36,6 +36,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(analyze.router, prefix="/api", tags=["Analysis"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 app.include_router(otp.router, prefix="/api/otp", tags=["OTP"])
+app.include_router(upload.router, prefix="/api", tags=["Document Intelligence"])
 
 
 @app.get("/")
