@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import api, { getProfile } from '@/lib/api';
+import { useAuthStore } from '@/lib/auth-store';
+import { usePerFinStore } from '@/lib/store';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -19,6 +22,8 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const setAnalysis = usePerFinStore((state) => state.setAnalysis);
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +76,24 @@ export default function SignupPage() {
         email,
         password,
       });
-      router.push('/login?signup=success');
+      
+      // Auto-login immediately after signup
+      const loginResponse = await api.post(`/auth/login`, {
+        email,
+        password,
+      });
+      const { access_token } = loginResponse.data;
+      setAuth({ id: 'temp-id', email }, access_token);
+      
+      try {
+        const profileData = await getProfile();
+        setAnalysis(profileData);
+        router.push('/dashboard');
+      } catch (profileErr: any) {
+        // Typically a new user won't have a profile yet
+        router.push('/input');
+      }
+      
     } catch (err: any) {
       setError(err.response?.data?.detail || "Signup failed. Please try again later.");
     } finally {

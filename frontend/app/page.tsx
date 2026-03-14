@@ -19,7 +19,20 @@ const features = [
   { icon: <MessageCircle size={19} />, title: 'AI Advisor', desc: 'Chat with your personal AI financial advisor powered by Google Gemini.' },
 ];
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/auth-store';
+
 export default function LandingPage() {
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
   return (
     <main style={{ minHeight: '100vh', background: BG }}>
       <Navbar />
@@ -40,7 +53,7 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 80 }}>
-          <Link href="/signup" style={{ textDecoration: 'none' }}>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
             <button style={{ display: 'flex', alignItems: 'center', gap: 7, background: OLIVE, color: BG, border: 'none', borderRadius: 5, padding: '11px 26px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
               Get Started <ArrowRight size={15} />
             </button>
@@ -83,7 +96,7 @@ export default function LandingPage() {
           </div>
           <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 10, color: DEEP, letterSpacing: '-0.02em' }}>Ready to take control?</h2>
           <p style={{ color: SEC, marginBottom: 26, lineHeight: 1.7, fontSize: 13 }}>Takes 2 minutes to fill in your profile. Get instant AI analysis.</p>
-          <Link href="/signup" style={{ textDecoration: 'none' }}>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
             <button style={{ background: OLIVE, color: BG, border: 'none', borderRadius: 5, padding: '10px 28px', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
               Start Your Financial Plan →
             </button>
