@@ -48,6 +48,8 @@ function LoginContent() {
         password,
       });
       const { access_token } = response.data;
+      // Clear any previous user's data before logging in
+      usePerFinStore.getState().reset();
       setAuth({ id: 'temp-id', email }, access_token);
       
       try {

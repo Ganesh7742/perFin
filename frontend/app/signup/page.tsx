@@ -83,6 +83,8 @@ export default function SignupPage() {
         password,
       });
       const { access_token } = loginResponse.data;
+      // Clear any previous data before starting a new session
+      usePerFinStore.getState().reset();
       setAuth({ id: 'temp-id', email }, access_token);
       
       try {

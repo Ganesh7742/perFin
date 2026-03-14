@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import axios from 'axios';
+import { usePerFinStore } from './store';
 
 interface User {
   id: string;
@@ -31,6 +32,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         set({ user: null, token: null, isAuthenticated: false });
         delete axios.defaults.headers.common['Authorization'];
+        // Clear financial data on logout
+        usePerFinStore.getState().reset();
       },
     }),
     {
