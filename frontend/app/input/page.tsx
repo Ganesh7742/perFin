@@ -27,7 +27,7 @@ const defaultProfile: FinancialProfile = {
   total_loans: '', credit_card_debt: '', monthly_loan_emi: '',
   dependents: '', existing_insurance: '', total_deductions: '',
   cibil_score: 750, credit_utilization: '',
-  goals: [{ goal_type: 'Home', target_amount: '', time_horizon_years: '', current_savings_for_goal: '', monthly_investment: '', priority: 'Medium' }],
+  goals: [{ goal_type: 'House', target_amount: '', time_horizon_years: '', current_savings_for_goal: '', monthly_investment: '', priority: 'Medium' }],
 };
 
 /** Format a raw numeric string into Indian comma notation for display */
@@ -154,8 +154,10 @@ export default function InputPage() {
   };
 
   const updateGoal = (i: number, field: keyof GoalInput, value: string | number) => {
-    // Strip commas so numeric state stays clean
-    const cleaned = typeof value === 'string' ? value.replace(/,/g, '').replace(/[^0-9]/g, '') : value;
+    let cleaned = value;
+    if (typeof value === 'string' && field !== 'goal_type' && field !== 'priority') {
+      cleaned = value.replace(/,/g, '').replace(/[^0-9.]/g, '');
+    }
     setLocalProfile(prev => {
       const goals = [...prev.goals];
       goals[i] = { ...goals[i], [field]: cleaned };
@@ -165,7 +167,7 @@ export default function InputPage() {
 
   const addGoal = () => setLocalProfile(prev => ({
     ...prev,
-    goals: [...prev.goals, { goal_type: 'Retirement', target_amount: '', time_horizon_years: '', current_savings_for_goal: '', monthly_investment: '', priority: 'Medium' }],
+    goals: [...prev.goals, { goal_type: '', target_amount: '', time_horizon_years: '', current_savings_for_goal: '', monthly_investment: '', priority: 'Medium' }],
   }));
 
   const removeGoal = (i: number) => setLocalProfile(prev => ({ ...prev, goals: prev.goals.filter((_, idx) => idx !== i) }));
@@ -377,10 +379,17 @@ export default function InputPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="input-label">Goal Type</label>
-                      <select className="input-field" value={g.goal_type} onChange={e => updateGoal(i, 'goal_type', e.target.value)} style={{ background: BG, color: DEEP }}>
-                        {['House', 'Car', 'Retirement', 'Education', 'Travel', 'Wedding', 'Emergency Fund', 'Business', 'Other'].map(o => <option key={o}>{o}</option>)}
-                      </select>
+                      <label className="input-label">Goal Name / Type</label>
+                      <input 
+                        className="input-field" 
+                        list={`goal-types-${i}`}
+                        value={g.goal_type} 
+                        onChange={e => updateGoal(i, 'goal_type', e.target.value)}
+                        placeholder="e.g. Dream House, New Car"
+                      />
+                      <datalist id={`goal-types-${i}`}>
+                        {['House', 'Car', 'Retirement', 'Education', 'Travel', 'Wedding', 'Emergency Fund', 'Business'].map(o => <option key={o} value={o} />)}
+                      </datalist>
                     </div>
                     <div>
                       <label className="input-label">Priority</label>

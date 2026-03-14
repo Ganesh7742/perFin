@@ -108,6 +108,17 @@ html, body {
 .input-field:focus { border-color: var(--accent); }
 .input-field::placeholder { color: var(--text-muted); }
 select.input-field { appearance: none; cursor: pointer; }
+.input-field::-webkit-calendar-picker-indicator,
+.input-field::-webkit-list-button {
+  display: none !important;
+  opacity: 0 !important;
+  -webkit-appearance: none !important;
+}
+input[list].input-field {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: none !important;
+}
 
 /* Remove arrows/spinners from number inputs */
 input[type="number"]::-webkit-inner-spin-button,
