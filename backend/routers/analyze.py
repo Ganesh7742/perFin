@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from schemas import (
-    FinancialProfileInput, AnalysisResponse, 
-    TaxOptimizationResponse, SandboxRequest, SandboxResponse
+    FinancialProfileInput, AnalysisResponse,
 )
 from financial_engine import (
     calculate_monthly_expenses,
@@ -14,8 +13,6 @@ from financial_engine import (
     calculate_insurance_advice,
     calculate_tax_advice,
     calculate_cibil_advice,
-    calculate_tax_optimization,
-    calculate_sandbox_simulation,
 )
 from ai_advisor import get_ai_summary
 from database import get_collection
@@ -108,19 +105,3 @@ async def export_my_data(current_user: dict = Depends(get_current_user)):
         "data": user["latest_analysis"]
     }
 
-@router.post("/analyze/tax-optimizer", response_model=TaxOptimizationResponse)
-async def get_tax_optimization(current_user: dict = Depends(get_current_user)):
-    users_col = get_collection("users")
-    user = await users_col.find_one({"_id": current_user["id"]})
-    if not user or "profile" not in user:
-        raise HTTPException(status_code=404, detail="Please complete your profile first")
-        
-    profile = FinancialProfileInput(**user["profile"])
-    return calculate_tax_optimization(profile)
-
-@router.post("/analyze/sandbox", response_model=SandboxResponse)
-async def get_sandbox_simulation(
-    request: SandboxRequest,
-    current_user: dict = Depends(get_current_user)
-):
-    return calculate_sandbox_simulation(request)

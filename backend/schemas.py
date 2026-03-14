@@ -154,13 +154,3 @@ class TaxOptimizationResponse(BaseModel):
     march_deadline_alert: str = "Invest before March 31st to claim these savings!"
 
 
-class SandboxRequest(BaseModel):
-    profile: FinancialProfileInput
-    excluded_goal_indices: List[int] = []
-
-
-class SandboxResponse(BaseModel):
-    baseline_projections: List[ProjectionPoint]
-    simulated_projections: List[ProjectionPoint]
-    impact_analysis: str
-    retirement_age_impact: float = 0

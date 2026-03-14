@@ -3,41 +3,41 @@ import { persist } from 'zustand/middleware';
 
 export interface GoalInput {
   goal_type: string;
-  target_amount: number;
-  time_horizon_years: number;
-  current_savings_for_goal: number;
-  monthly_investment: number;
+  target_amount: number | string;
+  time_horizon_years: number | string;
+  current_savings_for_goal: number | string;
+  monthly_investment: number | string;
   priority: string;
 }
 
 export interface FinancialProfile {
   name: string;
-  age: number;
+  age: number | string;
   occupation: string;
   location: string;
   marital_status: string;
-  monthly_income: number;
-  housing_expense: number;
-  food_expense: number;
-  transport_expense: number;
-  utilities_expense: number;
-  entertainment_expense: number;
-  other_expense: number;
-  current_savings: number;
-  stocks: number;
-  mutual_funds: number;
-  gold: number;
-  crypto: number;
-  real_estate: number;
-  total_loans: number;
-  credit_card_debt: number;
-  monthly_loan_emi: number;
+  monthly_income: number | string;
+  housing_expense: number | string;
+  food_expense: number | string;
+  transport_expense: number | string;
+  utilities_expense: number | string;
+  entertainment_expense: number | string;
+  other_expense: number | string;
+  current_savings: number | string;
+  stocks: number | string;
+  mutual_funds: number | string;
+  gold: number | string;
+  crypto: number | string;
+  real_estate: number | string;
+  total_loans: number | string;
+  credit_card_debt: number | string;
+  monthly_loan_emi: number | string;
   // Advisor fields
-  dependents: number;
-  existing_insurance: number;
-  total_deductions: number;
-  cibil_score: number;
-  credit_utilization: number;
+  dependents: number | string;
+  existing_insurance: number | string;
+  total_deductions: number | string;
+  cibil_score: number | string;
+  credit_utilization: number | string;
   goals: GoalInput[];
 }
 

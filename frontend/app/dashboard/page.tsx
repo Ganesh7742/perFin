@@ -8,7 +8,7 @@ import { deleteProfileData, exportProfileData } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { TrendingUp, Wallet, BarChart2, Target, AlertCircle, ArrowUpRight, Shield, Zap, CreditCard, Receipt } from 'lucide-react';
-import TaxOptimizer from '@/components/TaxOptimizer';
+
 
 const OLIVE = '#A35E47';
 const DEEP  = '#000000';
@@ -167,18 +167,6 @@ export default function DashboardPage() {
             <p style={{ fontSize: 12, color: SEC, lineHeight: 1.6, fontStyle: 'italic' }}>"{insurance_advice?.advice}"</p>
           </div>
 
-          {/* Tax */}
-          <div style={{ ...card, padding: 20, borderLeft: `3px solid ${SAGE}` }}>
-            <div style={label}><Receipt size={12} color={SAGE} />Tax Advisor</div>
-            <div style={{ textAlign: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 10, color: MUTED, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 5 }}>Recommended Regime</div>
-              <div style={{ fontSize: 19, fontWeight: 700, color: OLIVE }}>{tax_advice?.recommended_regime}</div>
-            </div>
-            <div style={{ background: BG, borderRadius: 5, padding: '11px', textAlign: 'center', border: `1px solid ${BORDER}` }}>
-              <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>Estimated Savings</div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: DEEP }}>{formatINR(tax_advice?.savings ?? 0)}</div>
-            </div>
-          </div>
 
           {/* Credit */}
           <div style={{ ...card, padding: 20, borderLeft: `3px solid ${BORDER}` }}>
@@ -198,10 +186,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Tax Optimizer (March Special) */}
-        <div style={{ marginBottom: 24 }}>
-          <TaxOptimizer />
-        </div>
+
 
         {/* Health Score + AI Summary */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
@@ -237,12 +222,9 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 12, display: 'flex', gap: 10 }}>
-                <Link href="/projection" style={{ textDecoration: 'none', flex: 1 }}>
-                  <button className="btn-accent" style={{ width: '100%', fontSize: 12, padding: '9px' }}>Full Projection →</button>
-                </Link>
-                <Link href="/sandbox" style={{ textDecoration: 'none', flex: 1 }}>
-                  <button className="btn-accent" style={{ width: '100%', fontSize: 12, padding: '9px', background: SAGE }}>Dream Sandbox ✨</button>
+              <div style={{ marginTop: 12 }}>
+                <Link href="/projection" style={{ textDecoration: 'none' }}>
+                  <button className="btn-accent" style={{ width: '100%', fontSize: 12, padding: '9px' }}>View Full Projection →</button>
                 </Link>
               </div>
             </div>

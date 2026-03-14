@@ -59,8 +59,18 @@ export default function Navbar() {
                   {l.label}
                 </Link>
               ))}
-              <Link href="/input" style={{ marginLeft: 8, padding: '5px 14px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', color: BG, background: OLIVE }}>
-                Update Profile
+              <Link href="/input" style={{ marginLeft: 8, display: 'flex', alignItems: 'center' }}>
+                <img 
+                  src="/profile.png" 
+                  alt="Profile" 
+                  style={{ 
+                    width: 32, 
+                    height: 32, 
+                    borderRadius: '50%', 
+                    border: `1px solid ${BORDER}`,
+                    objectFit: 'cover'
+                  }} 
+                />
               </Link>
               <button onClick={handleLogout} style={{ marginLeft: 6, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 5, fontSize: 13, fontWeight: 500, background: 'rgba(0,0,0,0.08)', color: '#000000', border: 'none', cursor: 'pointer' }}>
                 <LogOut size={12} /> Sign Out
@@ -95,7 +105,19 @@ export default function Navbar() {
                 </Link>
               ))}
               <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
-              <Link href="/input" onClick={() => setMobileMenuOpen(false)} style={{ padding: '9px 10px', borderRadius: 5, fontSize: 13, fontWeight: 500, textDecoration: 'none', textAlign: 'center', color: BG, background: OLIVE }}>Update Profile</Link>
+              <Link href="/input" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}>
+                <img 
+                  src="/profile.png" 
+                  alt="Profile" 
+                  style={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '50%', 
+                    border: `2px solid ${OLIVE}`,
+                    objectFit: 'cover'
+                  }} 
+                />
+              </Link>
               <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 5, fontSize: 13, color: '#8B3A2A', background: 'rgba(139,58,42,0.08)', border: 'none', cursor: 'pointer' }}>
                 <LogOut size={13} /> Sign Out
               </button>

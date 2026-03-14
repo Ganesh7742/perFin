@@ -277,33 +277,6 @@ def calculate_tax_optimization(profile: FinancialProfileInput) -> "TaxOptimizati
     )
 
 
-def calculate_sandbox_simulation(request: "SandboxRequest") -> "SandboxResponse":
-    from schemas import SandboxResponse, ProjectionPoint
-    
-    # Baseline
-    baseline = calculate_projections(request.profile)
-    
-    # Simulated
-    sim_profile = request.profile.model_copy(deep=True)
-    # Exclude specific goals by setting their investment to 0
-    for idx in request.excluded_goal_indices:
-        if 0 <= idx < len(sim_profile.goals):
-            sim_profile.goals[idx].monthly_investment = 0
-            
-    simulated = calculate_projections(sim_profile)
-    
-    # Calculate Impact Analysis (Qualitative placeholder)
-    impact = "By sacrificing short-term goals, your long-term wealth trajectory has steepened significantly."
-    if simulated[-1].net_worth > baseline[-1].net_worth:
-        diff = simulated[-1].net_worth - baseline[-1].net_worth
-        impact += f" You could potentially gain an extra ₹{diff:,.0f} by 2040."
-        
-    return SandboxResponse(
-        baseline_projections=baseline,
-        simulated_projections=simulated,
-        impact_analysis=impact
-    )
-
 
 def calculate_cibil_advice(profile: FinancialProfileInput) -> CibilAdvice:
     score = profile.cibil_score
