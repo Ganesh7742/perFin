@@ -4,11 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
-import api, { getProfile } from '@/lib/api';
+import api, { getProfile, API_BASE_URL } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
 import { usePerFinStore } from '@/lib/store';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 type SignupStep = 'EMAIL' | 'OTP' | 'PASSWORD';
 
@@ -31,7 +29,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API_URL}/otp/send-otp`, { email });
+      await axios.post(`${API_BASE_URL}/otp/send-otp`, { email });
       setStep('OTP');
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to send verification code. Please try again.");
@@ -46,7 +44,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API_URL}/otp/verify-otp`, { email, otp });
+      await axios.post(`${API_BASE_URL}/otp/verify-otp`, { email, otp });
       setStep('PASSWORD');
     } catch (err: any) {
       setError(err.response?.data?.detail || "Invalid or expired verification code.");
@@ -72,13 +70,12 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API_URL}/auth/signup`, {
+      await axios.post(`${API_BASE_URL}/auth/signup`, {
         email,
         password,
       });
       
-      // Auto-login immediately after signup
-      const loginResponse = await api.post(`/auth/login`, {
+      const loginResponse = await api.post(`auth/login`, {
         email,
         password,
       });

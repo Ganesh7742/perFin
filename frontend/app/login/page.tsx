@@ -8,7 +8,7 @@ import api, { getProfile } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
 import { usePerFinStore } from '@/lib/store';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Local API_URL removed to use centralized api.ts config
 
 function LoginContent() {
   const [email, setEmail] = useState('');
@@ -43,7 +43,7 @@ function LoginContent() {
     setIsLoading(true);
 
     try {
-      const response = await api.post(`/auth/login`, {
+      const response = await api.post(`auth/login`, {
         email,
         password,
       });

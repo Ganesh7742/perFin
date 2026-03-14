@@ -53,8 +53,11 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Only redirect if hydration is definitely finished AND there is no profile
   useEffect(() => { 
-    if (hasHydrated && !profile) router.push('/input'); 
+    if (hasHydrated && !profile) {
+      router.replace('/input'); 
+    }
   }, [profile, hasHydrated, router]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
