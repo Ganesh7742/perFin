@@ -63,7 +63,7 @@ export default function DashboardPage() {
       await deleteProfileData();
       usePerFinStore.getState().reset();
       useAuthStore.getState().logout();
-      router.push('/');
+      window.location.href = '/';
     } catch (err) {
       console.error("Failed to delete account", err);
       alert("Failed to delete account. Please try again.");
