@@ -236,14 +236,13 @@ export default function InputPage() {
         </div>
 
         {/* Wealth Sync Card */}
-        <div style={{ 
+        <div className="hover-card" style={{ 
           background: 'rgba(163,94,71,0.04)', 
           border: `1px dashed ${OLIVE}`, 
           borderRadius: 8, 
           padding: '24px', 
           marginBottom: 28, 
-          textAlign: 'center',
-          transition: 'all 0.2s'
+          textAlign: 'center'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <div style={{ background: OLIVE, color: BG, padding: 10, borderRadius: '50%' }}>
@@ -311,7 +310,7 @@ export default function InputPage() {
         </div>
 
         {/* Card */}
-        <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6, padding: 28, marginBottom: 18 }}>
+        <div className="hover-card" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6, padding: 28, marginBottom: 18 }}>
 
           {step === 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -369,7 +368,7 @@ export default function InputPage() {
           {step === 5 && (
             <div>
               {profile.goals.map((g, i) => (
-                <div key={i} style={{ marginBottom: 20, padding: 18, borderRadius: 5, background: CARD2, border: `1px solid ${BORDER}` }}>
+                <div key={i} className="hover-card" style={{ marginBottom: 20, padding: 18, borderRadius: 5, background: CARD2, border: `1px solid ${BORDER}` }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                     <span style={{ fontWeight: 600, color: OLIVE, fontSize: 13 }}>Goal #{i + 1}</span>
                     {profile.goals.length > 1 && (

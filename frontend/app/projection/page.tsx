@@ -91,7 +91,7 @@ export default function ProjectionPage() {
 
         {/* Sliders */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20, marginBottom: 24 }}>
-          <div style={{ ...card, padding: '16px 20px' }}>
+          <div className="hover-card" style={{ ...card, padding: '16px 20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: SEC }}>Expected Annual Return</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: OLIVE }}>{returnRate}%</span>
@@ -104,7 +104,7 @@ export default function ProjectionPage() {
             </div>
           </div>
 
-          <div style={{ ...card, padding: '16px 20px' }}>
+          <div className="hover-card" style={{ ...card, padding: '16px 20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: SEC }}>Surplus Investment %</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: OLIVE }}>{investRate}%</span>
@@ -119,7 +119,7 @@ export default function ProjectionPage() {
         </div>
 
         {/* Chart */}
-        <div style={{ ...card, padding: 22, marginBottom: 16 }}>
+        <div className="hover-card" style={{ ...card, padding: 22, marginBottom: 16 }}>
           <p style={secLabel}>Net Worth Growth (2025 – 2040)</p>
           <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={computedData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
@@ -145,11 +145,11 @@ export default function ProjectionPage() {
         </div>
 
         {/* Milestones */}
-        <div style={{ ...card, padding: 22 }}>
+        <div className="hover-card" style={{ ...card, padding: 22 }}>
           <p style={secLabel}>Milestone Snapshot</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
             {milestones.map(m => (
-              <div key={m.year} style={{ textAlign: 'center', padding: '16px 10px', background: BG, borderRadius: 5, border: `1px solid ${BORDER}` }}>
+              <div key={m.year} className="hover-card" style={{ textAlign: 'center', padding: '16px 10px', background: BG, borderRadius: 5, border: `1px solid ${BORDER}` }}>
                 <div style={{ fontSize: 10, color: MUTED, marginBottom: 5, fontWeight: 600, letterSpacing: '0.07em' }}>YEAR {m.year}</div>
                 <div style={{ fontSize: 19, fontWeight: 700, color: OLIVE }}>{formatINR(m.val ?? 0)}</div>
               </div>

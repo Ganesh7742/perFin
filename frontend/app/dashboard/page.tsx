@@ -142,7 +142,7 @@ export default function DashboardPage() {
         {/* Metrics */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 20 }}>
           {metrics.map((m, i) => (
-            <div key={i} style={{ ...card, padding: 18 }}>
+            <div key={i} className="hover-card" style={{ ...card, padding: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, color: m.color }}>{m.icon}<span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: MUTED }}>{m.label}</span></div>
               <div style={{ fontSize: 20, fontWeight: 700, color: DEEP, marginBottom: 3 }}>{m.value}</div>
               <div style={{ fontSize: 11, color: m.color, fontWeight: 600 }}>{m.sub}</div>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
         {/* Advisor Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: 12, marginBottom: 20 }}>
           {/* Insurance */}
-          <div style={{ ...card, padding: 20, borderLeft: `3px solid ${OLIVE}` }}>
+          <div className="hover-card" style={{ ...card, padding: 20, borderLeft: `3px solid ${OLIVE}` }}>
             <div style={label}><Shield size={12} color={OLIVE} />Insurance Advice</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ fontSize: 13, color: SEC }}>Life Cover</span>
@@ -169,7 +169,7 @@ export default function DashboardPage() {
 
 
           {/* Credit */}
-          <div style={{ ...card, padding: 20, borderLeft: `3px solid ${BORDER}` }}>
+          <div className="hover-card" style={{ ...card, padding: 20, borderLeft: `3px solid ${BORDER}` }}>
             <div style={label}><CreditCard size={12} color={MUTED} />Credit Health</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
           const statusColor = met6 ? OLIVE : met3 ? '#8F7020' : DANGER;
           const shortfall = Math.max(0, target6 - saved);
           return (
-            <div style={{ ...card, padding: 20, marginBottom: 20, borderLeft: `3px solid ${statusColor}` }}>
+            <div className="hover-card" style={{ ...card, padding: 20, marginBottom: 20, borderLeft: `3px solid ${statusColor}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
                 <div style={label}><Zap size={12} color={statusColor} />Emergency Fund</div>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 4, background: `${statusColor}18`, color: statusColor }}>{statusLabel}</span>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
         {/* Health Score + AI Summary */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
 
-          <div style={{ ...card, flex: '1 1 270px', maxWidth: 320, padding: 22 }}>
+          <div className="hover-card" style={{ ...card, flex: '1 1 270px', maxWidth: 320, padding: 22 }}>
             <div style={label}><Shield size={12} color={MUTED} />Health Score</div>
             <ScoreArc score={health_score.total} />
             <div style={{ textAlign: 'center', marginBottom: 18 }}>
@@ -253,11 +253,11 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ flex: '2 1 360px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ ...card, padding: 22, flex: 1 }}>
+            <div className="hover-card" style={{ ...card, padding: 22, flex: 1 }}>
               <div style={label}><div style={{ width: 6, height: 6, borderRadius: '50%', background: OLIVE }} />AI Analysis</div>
               <p style={{ color: SEC, lineHeight: 1.8, fontSize: 13 }}>{ai_summary}</p>
             </div>
-            <div style={{ ...card, padding: 20 }}>
+            <div className="hover-card" style={{ ...card, padding: 20 }}>
               <div style={{ ...label, marginBottom: 14 }}>Projected Net Worth</div>
               <div style={{ display: 'flex', gap: 10 }}>
                 {[{ year: 2030, val: projection2030?.net_worth }, { year: 2035, val: projection2035?.net_worth }].map(p => (
@@ -278,14 +278,14 @@ export default function DashboardPage() {
 
         {/* Goals */}
         {analysis.goals.length > 0 && (
-          <div style={{ ...card, padding: 22 }}>
+          <div className="hover-card" style={{ ...card, padding: 22 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <div style={label}><Target size={12} color={MUTED} />Goal Snapshot</div>
               <Link href="/goals"><button className="btn-ghost" style={{ fontSize: 11 }}>View All →</button></Link>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 10 }}>
               {analysis.goals.map((g, i) => (
-                <div key={i} style={{ padding: 14, borderRadius: 5, background: BG, border: `1px solid ${BORDER}` }}>
+                <div key={i} className="hover-card" style={{ padding: 14, borderRadius: 5, background: BG, border: `1px solid ${BORDER}` }}>
                   <div style={{ fontWeight: 600, marginBottom: 5, fontSize: 13, color: DEEP }}>{g.goal_type}</div>
                   <div style={{ fontSize: 17, fontWeight: 700, color: OLIVE, marginBottom: 3 }}>{formatINR(g.target_amount)}</div>
                   <div style={{ fontSize: 10, color: MUTED, marginBottom: 8 }}>{g.time_horizon_years} years</div>

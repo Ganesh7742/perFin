@@ -66,7 +66,7 @@ export default function GoalsPage() {
             { label: 'Total Target', val: formatINR(goals.reduce((s, g) => s + g.target_amount, 0)) },
             { label: 'Monthly SIP', val: formatINR(goals.reduce((s, g) => s + g.monthly_investment_needed, 0)) },
           ].map((s, i) => (
-            <div key={i} style={{ ...card, padding: '14px 18px', textAlign: 'center' }}>
+            <div key={i} className="hover-card" style={{ ...card, padding: '14px 18px', textAlign: 'center' }}>
               <div style={{ fontSize: 19, fontWeight: 700, color: OLIVE }}>{s.val}</div>
               <div style={{ ...secLabel, marginTop: 4 }}>{s.label}</div>
             </div>
@@ -79,7 +79,7 @@ export default function GoalsPage() {
             const ok = g.feasibility === 'Achievable';
             const pct = Math.min(100, (g.current_savings_for_goal / g.target_amount) * 100);
             return (
-              <div key={i} style={{ ...card, padding: 22, borderLeft: `3px solid ${ok ? OLIVE : SAGE}` }}>
+              <div key={i} className="hover-card" style={{ ...card, padding: 22, borderLeft: `3px solid ${ok ? OLIVE : SAGE}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 38, height: 38, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', background: ok ? 'rgba(99,107,47,0.1)' : 'rgba(143,158,88,0.14)' }}>
@@ -111,7 +111,7 @@ export default function GoalsPage() {
                     { icon: <Target size={12} />, label: 'Projected Corpus', val: formatINR(g.projected_corpus), color: OLIVE },
                     ...(!ok ? [{ icon: <AlertTriangle size={12} />, label: 'Monthly Shortfall', val: `+${formatINR(g.shortfall_monthly)}`, color: SAGE }] : []),
                   ].map((m, j) => (
-                    <div key={j} style={{ background: BG, borderRadius: 5, padding: '11px', border: `1px solid ${BORDER}` }}>
+                    <div key={j} className="hover-card" style={{ background: BG, borderRadius: 5, padding: '11px', border: `1px solid ${BORDER}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5, color: MUTED }}>{m.icon}<span style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{m.label}</span></div>
                       <div style={{ fontSize: 15, fontWeight: 700, color: m.color }}>{m.val}</div>
                     </div>
