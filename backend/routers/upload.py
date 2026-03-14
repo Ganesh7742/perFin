@@ -74,7 +74,17 @@ async def extract_with_groq(text: str) -> dict:
       "credit_card_debt": 0,
       "monthly_loan_emi": 0,
       "cibil_score": 750,
-      "credit_utilization": 0
+      "credit_utilization": 0,
+      "goals": [
+        {{
+          "goal_type": "string (e.g., Home, Education, Travel, Emergency Fund)",
+          "target_amount": 0,
+          "time_horizon_years": 0,
+          "current_savings_for_goal": 0,
+          "monthly_investment": 0,
+          "priority": "High/Medium/Low"
+        }}
+      ]
     }}
     
     RULES:
@@ -133,7 +143,11 @@ async def upload_financial_doc(
         housing_expense, food_expense, transport_expense, utilities_expense, entertainment_expense, 
         other_expense, total_deductions, current_savings, stocks, mutual_funds, gold, crypto, 
         real_estate, existing_insurance, total_loans, credit_card_debt, monthly_loan_emi, 
-        cibil_score, credit_utilization.
+        cibil_score, credit_utilization, goals.
+        
+        For goals, it should be an array of objects with the following keys:
+        goal_type (string), target_amount (number), time_horizon_years (number), 
+        current_savings_for_goal (number), monthly_investment (number), priority (High/Medium/Low).
         
         Use 0 for missing values. Output ONLY raw JSON.
         """
