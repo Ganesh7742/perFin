@@ -74,7 +74,7 @@ export default function LearnPage() {
         {/* Content Placeholder */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24, marginBottom: 60 }}>
           {[1, 2, 3].map(i => (
-            <div key={i} style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 10, padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div key={i} className="module-card" style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 10, padding: 24, display: 'flex', flexDirection: 'column', gap: 12, transition: 'all 0.3s ease', cursor: 'pointer' }}>
               <div style={{ width: 40, height: 40, borderRadius: 8, background: 'rgba(163,94,71,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <BookOpen size={20} color={OLIVE} />
               </div>
@@ -82,7 +82,7 @@ export default function LearnPage() {
               <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.5 }}>
                 We're crafting expert content to simplify {activeTab.toLowerCase()} concepts. Stay tuned for deep dives and actionable tips.
               </p>
-              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: OLIVE, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              <div className="module-link" style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: OLIVE, fontSize: 13, fontWeight: 600, transition: 'gap 0.2s ease' }}>
                 Notify Me <ArrowRight size={14} />
               </div>
             </div>
@@ -94,8 +94,18 @@ export default function LearnPage() {
       <style jsx>{`
         button:hover {
           border-color: ${OLIVE} !important;
+          background: rgba(163,94,71,0.05) !important;
+        }
+        .module-card:hover {
+          border-color: ${OLIVE} !important;
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(0,0,0,0.04);
+        }
+        .module-card:hover .module-link {
+          gap: 8px !important;
         }
       `}</style>
     </div>
+
   );
 }

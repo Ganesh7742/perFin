@@ -188,8 +188,53 @@ export default function DashboardPage() {
 
 
 
+        {/* Emergency Fund */}
+        {(() => {
+          const monthlyExp = analysis.monthly_expenses;
+          const target3 = monthlyExp * 3;
+          const target6 = monthlyExp * 6;
+          const saved = analysis.total_assets > 0
+            ? Math.min(analysis.total_assets, target6)
+            : 0;
+          const pct = Math.min((saved / target6) * 100, 100);
+          const met3 = saved >= target3;
+          const met6 = saved >= target6;
+          const statusLabel = met6 ? 'Fully Funded' : met3 ? '3-Month Met' : 'Under-funded';
+          const statusColor = met6 ? OLIVE : met3 ? '#8F7020' : DANGER;
+          const shortfall = Math.max(0, target6 - saved);
+          return (
+            <div style={{ ...card, padding: 20, marginBottom: 20, borderLeft: `3px solid ${statusColor}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+                <div style={label}><Zap size={12} color={statusColor} />Emergency Fund</div>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 4, background: `${statusColor}18`, color: statusColor }}>{statusLabel}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 14 }}>
+                {[
+                  { lbl: '3-Month Target', val: formatINR(target3), color: met3 ? OLIVE : DANGER },
+                  { lbl: '6-Month Target', val: formatINR(target6), color: met6 ? OLIVE : '#8F7020' },
+                  { lbl: 'Liquid Savings', val: formatINR(saved), color: DEEP },
+                  { lbl: 'Shortfall', val: shortfall > 0 ? formatINR(shortfall) : '—', color: shortfall > 0 ? DANGER : OLIVE },
+                ].map(({ lbl, val, color }) => (
+                  <div key={lbl} style={{ background: BG, borderRadius: 5, padding: '10px 12px', border: `1px solid ${BORDER}` }}>
+                    <div style={{ fontSize: 10, color: MUTED, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lbl}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color }}>{val}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom: 6, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: MUTED }}>
+                <span>Progress to 6-month safety net</span>
+                <span style={{ fontWeight: 700, color: statusColor }}>{pct.toFixed(0)}%</span>
+              </div>
+              <div style={{ height: 7, borderRadius: 4, background: CARD2, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: statusColor, borderRadius: 4, transition: 'width 0.6s ease' }} />
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Health Score + AI Summary */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
+
           <div style={{ ...card, flex: '1 1 270px', maxWidth: 320, padding: 22 }}>
             <div style={label}><Shield size={12} color={MUTED} />Health Score</div>
             <ScoreArc score={health_score.total} />

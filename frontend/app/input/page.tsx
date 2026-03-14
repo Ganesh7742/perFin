@@ -30,24 +30,56 @@ const defaultProfile: FinancialProfile = {
   goals: [{ goal_type: 'Home', target_amount: '', time_horizon_years: '', current_savings_for_goal: '', monthly_investment: '', priority: 'Medium' }],
 };
 
+/** Format a raw numeric string into Indian comma notation for display */
+function toINRDisplay(val: string | number): string {
+  if (val === '' || val === null || val === undefined) return '';
+  const raw = String(val).replace(/,/g, '');
+  const num = parseFloat(raw);
+  if (isNaN(num)) return raw;
+  return num.toLocaleString('en-IN');
+}
+
 function InputGroup({ label, name, value, onChange, type = 'number', prefix = '₹', placeholder = '0' }: {
   label: string; name: string; value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string; prefix?: string; placeholder?: string;
 }) {
+  const [focused, setFocused] = useState(false);
+  const isINR = prefix === '₹';
+
+  // Show formatted value when not focused, raw when typing
+  const displayValue = isINR && !focused ? toINRDisplay(value) : value;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isINR) {
+      // Strip commas before bubbling up so parent state stays clean
+      const stripped = e.target.value.replace(/,/g, '').replace(/[^0-9]/g, '');
+      const syntheticEvent = Object.create(e) as React.ChangeEvent<HTMLInputElement>;
+      Object.defineProperty(syntheticEvent, 'target', {
+        writable: false,
+        value: { ...e.target, name, value: stripped },
+      });
+      onChange(syntheticEvent);
+    } else {
+      onChange(e);
+    }
+  };
+
   return (
     <div>
       <label className="input-label">{label}</label>
       <div style={{ position: 'relative' }}>
         {prefix && <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: MUTED, fontSize: 13 }}>{prefix}</span>}
-        <input 
-          className="input-field" 
-          type={type} 
-          name={name} 
-          value={value} 
-          onChange={onChange} 
-          onWheel={(e) => (e.target as HTMLInputElement).blur()}
-          placeholder={placeholder} 
-          style={{ paddingLeft: prefix ? 26 : 14 }} 
+        <input
+          className="input-field"
+          type={isINR ? 'text' : type}
+          inputMode={isINR ? 'numeric' : undefined}
+          name={name}
+          value={displayValue}
+          onChange={handleChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          style={{ paddingLeft: prefix ? 26 : 14 }}
         />
       </div>
     </div>
@@ -115,9 +147,11 @@ export default function InputPage() {
   };
 
   const updateGoal = (i: number, field: keyof GoalInput, value: string | number) => {
+    // Strip commas so numeric state stays clean
+    const cleaned = typeof value === 'string' ? value.replace(/,/g, '').replace(/[^0-9]/g, '') : value;
     setLocalProfile(prev => {
       const goals = [...prev.goals];
-      goals[i] = { ...goals[i], [field]: value };
+      goals[i] = { ...goals[i], [field]: cleaned };
       return { ...prev, goals };
     });
   };
@@ -348,10 +382,10 @@ export default function InputPage() {
                         {['High', 'Medium', 'Low'].map(o => <option key={o}>{o}</option>)}
                       </select>
                     </div>
-                    <div><label className="input-label">Target Amount (₹)</label><input className="input-field" type="number" value={g.target_amount} onChange={e => updateGoal(i, 'target_amount', e.target.value)} onWheel={(e) => (e.target as HTMLInputElement).blur()} placeholder="Amount" /></div>
+                    <div><label className="input-label">Target Amount (₹)</label><input className="input-field" type="text" inputMode="numeric" value={toINRDisplay(g.target_amount)} onChange={e => updateGoal(i, 'target_amount', e.target.value)} placeholder="Amount" /></div>
                     <div><label className="input-label">Time Horizon (Years)</label><input className="input-field" type="number" value={g.time_horizon_years} onChange={e => updateGoal(i, 'time_horizon_years', e.target.value)} onWheel={(e) => (e.target as HTMLInputElement).blur()} placeholder="Years" /></div>
-                    <div><label className="input-label">Current Savings for Goal (₹)</label><input className="input-field" type="number" value={g.current_savings_for_goal} onChange={e => updateGoal(i, 'current_savings_for_goal', e.target.value)} onWheel={(e) => (e.target as HTMLInputElement).blur()} placeholder="Amount" /></div>
-                    <div><label className="input-label">Monthly Investment (₹)</label><input className="input-field" type="number" value={g.monthly_investment} onChange={e => updateGoal(i, 'monthly_investment', e.target.value)} onWheel={(e) => (e.target as HTMLInputElement).blur()} placeholder="Amount" /></div>
+                    <div><label className="input-label">Current Savings for Goal (₹)</label><input className="input-field" type="text" inputMode="numeric" value={toINRDisplay(g.current_savings_for_goal)} onChange={e => updateGoal(i, 'current_savings_for_goal', e.target.value)} placeholder="Amount" /></div>
+                    <div><label className="input-label">Monthly Investment (₹)</label><input className="input-field" type="text" inputMode="numeric" value={toINRDisplay(g.monthly_investment)} onChange={e => updateGoal(i, 'monthly_investment', e.target.value)} placeholder="Amount" /></div>
                   </div>
                 </div>
               ))}

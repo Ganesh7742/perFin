@@ -106,11 +106,23 @@ export default function ChatPage() {
         {/* Messages */}
         <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 6, padding: 18, marginBottom: 10, overflowY: 'auto', maxHeight: 420, flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {messages.map((m, i) => (
-            <div key={i} style={{ display: 'flex', gap: 9, flexDirection: m.role === 'user' ? 'row-reverse' : 'row', alignItems: 'flex-start' }}>
+            <div key={i} style={{ display: 'flex', gap: 9, flexDirection: 'row', alignItems: 'flex-start' }}>
               <div style={{ width: 26, height: 26, borderRadius: 4, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: m.role === 'user' ? 'rgba(99,107,47,0.15)' : OLIVE }}>
                 {m.role === 'user' ? <User size={13} color={OLIVE} /> : <Bot size={13} color={BG} />}
               </div>
-              <div style={{ maxWidth: '82%', padding: '9px 13px', borderRadius: 5, background: m.role === 'user' ? 'rgba(99,107,47,0.07)' : BG, border: `1px solid ${BORDER}`, fontSize: 13, lineHeight: 1.75, color: DEEP, whiteSpace: 'pre-wrap' }}>
+              <div style={{ 
+                maxWidth: '82%', 
+                padding: '9px 13px', 
+                borderRadius: 5, 
+                background: m.role === 'user' ? 'rgba(99,107,47,0.07)' : BG, 
+                border: `1px solid ${BORDER}`, 
+                fontSize: 13, 
+                lineHeight: 1.75, 
+                color: DEEP, 
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'anywhere'
+              }}>
                 {m.content}
               </div>
             </div>
@@ -127,16 +139,49 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <div style={{ display: 'flex', gap: 7, marginBottom: 24 }}>
-          <input style={{ flex: 1, padding: '11px 15px', fontSize: 13, background: CARD, border: `1px solid ${BORDER}`, borderRadius: 5, color: DEEP, fontFamily: 'Inter, sans-serif', outline: 'none' }}
-            value={input} onChange={e => setInput(e.target.value)}
+        <div style={{ display: 'flex', gap: 7, marginBottom: 24, alignItems: 'flex-end' }}>
+          <textarea 
+            style={{ 
+              flex: 1, 
+              padding: '11px 15px', 
+              fontSize: 13, 
+              background: CARD, 
+              border: `1px solid ${BORDER}`, 
+              borderRadius: 5, 
+              color: DEEP, 
+              fontFamily: 'Inter, sans-serif', 
+              outline: 'none',
+              resize: 'none',
+              minHeight: '42px',
+              maxHeight: '120px'
+            }}
+            rows={1}
+            value={input} 
+            onChange={e => {
+              setInput(e.target.value);
+              // Simple auto-height
+              e.target.style.height = 'inherit';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
             placeholder="Ask anything about your finances..."
-            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()} />
-          <button onClick={() => send()} disabled={loading || !input.trim()}
-            style={{ background: OLIVE, color: BG, border: 'none', borderRadius: 5, padding: '11px 15px', cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: loading || !input.trim() ? 0.5 : 1 }}>
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                send();
+                (e.target as HTMLTextAreaElement).style.height = '42px';
+              }
+            }}
+          />
+          <button onClick={() => {
+            send();
+            const ta = document.querySelector('textarea');
+            if (ta) ta.style.height = '42px';
+          }} disabled={loading || !input.trim()}
+            style={{ background: OLIVE, color: BG, border: 'none', borderRadius: 5, padding: '11px 15px', cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: loading || !input.trim() ? 0.5 : 1, height: '42px' }}>
             <Send size={15} />
           </button>
         </div>
+
       </div>
     </div>
   );
