@@ -7,7 +7,23 @@ import { formatINR } from '@/lib/utils';
 import { deleteProfileData, exportProfileData } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-import { TrendingUp, Wallet, BarChart2, Target, AlertCircle, ArrowUpRight, Shield, Zap, CreditCard, Receipt } from 'lucide-react';
+import { 
+  BarChart2, 
+  ArrowUpRight, 
+  TrendingUp, 
+  Wallet, 
+  CreditCard, 
+  PieChart, 
+  Shield, 
+  Lightbulb, 
+  ChevronRight,
+  TrendingDown,
+  Activity,
+  User,
+  LogOut,
+  Edit3,
+  Target, AlertCircle, Zap, Receipt
+} from 'lucide-react';
 
 
 const OLIVE = '#A35E47';
@@ -136,6 +152,7 @@ export default function DashboardPage() {
             <p style={{ color: MUTED, fontSize: 13 }}>Your financial health overview</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <Link href="/input"><button className="btn-ghost" style={{ fontSize: 12 }}><Edit3 size={12} style={{ display: 'inline', marginRight: 4 }} />Edit Profile</button></Link>
             <Link href="/projection"><button className="btn-ghost" style={{ fontSize: 12 }}><BarChart2 size={12} style={{ display: 'inline', marginRight: 4 }} />Projection</button></Link>
             <Link href="/chat"><button className="btn-accent" style={{ fontSize: 12, padding: '7px 16px' }}><ArrowUpRight size={12} style={{ display: 'inline', marginRight: 4 }} />Ask AI</button></Link>
           </div>

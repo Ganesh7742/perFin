@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePerFinStore, FinancialProfile, GoalInput } from '@/lib/store';
-import { analyzeProfile, uploadFinancialDoc } from '@/lib/api';
+import { analyzeProfile, uploadFinancialDoc, fetchRawProfile } from '@/lib/api';
 import Navbar from '@/components/Navbar';
+import { useAuthStore } from '@/lib/auth-store';
 import { User, DollarSign, PieChart, AlertCircle, Shield, Target, ChevronRight, ChevronLeft, Loader2, Upload, CheckCircle2 } from 'lucide-react';
 
 const OLIVE = '#A35E47';
@@ -104,14 +105,34 @@ function SelectGroup({ label, name, value, onChange, options }: {
 export default function InputPage() {
   const router = useRouter();
   const { profile: storedProfile, setProfile, setAnalysis } = usePerFinStore();
+  const { isAuthenticated } = useAuthStore();
   const [step, setStep] = useState(0);
   const [profile, setLocalProfile] = useState<FinancialProfile>(defaultProfile);
+  const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
-    if (storedProfile) {
-      setLocalProfile(storedProfile);
-    }
-  }, [storedProfile]);
+    usePerFinStore.persist.onFinishHydration(() => setHasHydrated(true));
+    setHasHydrated(usePerFinStore.persist.hasHydrated());
+  }, []);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (storedProfile) {
+        setLocalProfile(storedProfile);
+      } else if (hasHydrated && isAuthenticated) {
+        try {
+          const data = await fetchRawProfile();
+          if (data) {
+            setLocalProfile(data);
+            setProfile(data);
+          }
+        } catch (err) {
+          console.log("No profile on server yet", err);
+        }
+      }
+    };
+    loadProfile();
+  }, [storedProfile, hasHydrated, isAuthenticated, setProfile]);
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState('');

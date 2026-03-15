@@ -34,6 +34,11 @@ export async function getProfile(): Promise<AnalysisResult> {
   return data;
 }
 
+export async function fetchRawProfile(): Promise<FinancialProfile> {
+  const { data } = await api.get('analyze/profile/me');
+  return data;
+}
+
 export async function deleteProfileData(): Promise<void> {
   await api.delete('analyze/me');
 }

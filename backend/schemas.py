@@ -138,19 +138,3 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 
-class TaxRecommendation(BaseModel):
-    instrument: str
-    section: str
-    description: str
-    current_amount: float
-    recommended_addition: float
-    potential_savings: float
-
-
-class TaxOptimizationResponse(BaseModel):
-    recommendations: List[TaxRecommendation]
-    total_additional_investment: float
-    total_tax_saved: float
-    march_deadline_alert: str = "Invest before March 31st to claim these savings!"
-
-

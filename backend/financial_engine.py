@@ -175,38 +175,54 @@ def calculate_insurance_advice(profile: FinancialProfileInput) -> InsuranceAdvic
 
 
 def calculate_new_tax(income: float) -> float:
-    tax = 0
-    if income > 300000:
-        tax += min(income - 300000, 300000) * 0.05
-    if income > 600000:
-        tax += min(income - 600000, 300000) * 0.10
-    if income > 900000:
-        tax += min(income - 900000, 300000) * 0.15
-    if income > 1200000:
-        tax += min(income - 1200000, 300000) * 0.20
-    if income > 1500000:
-        tax += (income - 1500000) * 0.30
-    return tax
-
-
-def calculate_old_tax(taxable_income: float) -> float:
-    tax = 0
-    if taxable_income <= 250000:
+    # Standard Deduction for New Regime (Budget 2024)
+    taxable_income = max(0, income - 75000)
+    
+    # Rebate u/s 87A: Nil tax up to 7L income (before standard deduction)
+    if income <= 700000:
         return 0
+        
+    tax = 0
+    # New Slabs FY 24-25
+    if taxable_income > 300000:
+        tax += min(taxable_income - 300000, 400000) * 0.05  # 3-7L
+    if taxable_income > 700000:
+        tax += min(taxable_income - 700000, 300000) * 0.10  # 7-10L
+    if taxable_income > 1000000:
+        tax += min(taxable_income - 1000000, 200000) * 0.15 # 10-12L
+    if taxable_income > 1200000:
+        tax += min(taxable_income - 1200000, 300000) * 0.20 # 12-15L
+    if taxable_income > 1500000:
+        tax += (taxable_income - 1500000) * 0.30           # >15L
+        
+    # Add 4% Cess
+    return tax * 1.04
+
+
+def calculate_old_tax(income: float, deductions: float) -> float:
+    # Standard Deduction for Old Regime
+    taxable_income = max(0, income - deductions - 50000)
+    
+    # Rebate u/s 87A: Nil tax up to 5L income (after deductions)
+    if taxable_income <= 500000:
+        return 0
+        
+    tax = 0
     if taxable_income > 250000:
         tax += min(taxable_income - 250000, 250000) * 0.05
     if taxable_income > 500000:
         tax += min(taxable_income - 500000, 500000) * 0.20
     if taxable_income > 1000000:
         tax += (taxable_income - 1000000) * 0.30
-    return tax
+        
+    # Add 4% Cess
+    return tax * 1.04
 
 
 def calculate_tax_advice(profile: FinancialProfileInput) -> TaxAdvice:
     annual_income = profile.monthly_income * 12
-    old_taxable = max(0, annual_income - profile.total_deductions)
     
-    old_tax = calculate_old_tax(old_taxable)
+    old_tax = calculate_old_tax(annual_income, profile.total_deductions)
     new_tax_val = calculate_new_tax(annual_income)
     
     if new_tax_val < old_tax:
@@ -222,60 +238,6 @@ def calculate_tax_advice(profile: FinancialProfileInput) -> TaxAdvice:
         recommended_regime=regime,
         savings=round(savings)
     )
-
-
-def calculate_tax_optimization(profile: FinancialProfileInput) -> "TaxOptimizationResponse":
-    from schemas import TaxRecommendation, TaxOptimizationResponse
-    
-    annual_income = profile.monthly_income * 12
-    # Basic logic for March optimization
-    recommendations = []
-    
-    # 1. Section 80C (Limit 1.5L)
-    # We assume 'total_deductions' is what they are currently claiming in 80C/D mostly
-    # But let's refine: assume 80C is the primary target
-    current_80c = profile.total_deductions 
-    limit_80c = 150000
-    gap_80c = max(0, limit_80c - current_80c)
-    
-    if gap_80c > 500:
-        recommendations.append(TaxRecommendation(
-            instrument="ELSS (Tax Saving Mutual Funds)",
-            section="80C",
-            description="Invest in equity markets with a 3-year lock-in for high returns.",
-            current_amount=current_80c,
-            recommended_addition=gap_80c * 0.6,
-            potential_savings=gap_80c * 0.6 * 0.2 # Assuming 20% slab for simplicity
-        ))
-        recommendations.append(TaxRecommendation(
-            instrument="PPF / VPF",
-            section="80C",
-            description="Safe, government-backed long term savings with fixed interest.",
-            current_amount=current_80c,
-            recommended_addition=gap_80c * 0.4,
-            potential_savings=gap_80c * 0.4 * 0.2
-        ))
-
-    # 2. Section 80D (Health Insurance)
-    if profile.existing_insurance < 10000:
-        recommendations.append(TaxRecommendation(
-            instrument="Comprehensive Health Insurance",
-            section="80D",
-            description="Protect your family while saving additional tax beyond 80C.",
-            current_amount=profile.existing_insurance,
-            recommended_addition=25000,
-            potential_savings=25000 * 0.2
-        ))
-
-    total_add = sum(r.recommended_addition for r in recommendations)
-    total_save = sum(r.potential_savings for r in recommendations)
-    
-    return TaxOptimizationResponse(
-        recommendations=recommendations,
-        total_additional_investment=round(total_add),
-        total_tax_saved=round(total_save)
-    )
-
 
 
 def calculate_cibil_advice(profile: FinancialProfileInput) -> CibilAdvice:
