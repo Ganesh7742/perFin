@@ -49,9 +49,11 @@ export default function DashboardPage() {
     setHasHydrated(usePerFinStore.persist.hasHydrated());
   }, []);
 
+  const { isAuthenticated } = useAuthStore();
+
   useEffect(() => { 
-    if (hasHydrated && !analysis) router.push('/input'); 
-  }, [analysis, hasHydrated, router]);
+    if (hasHydrated && isAuthenticated && !analysis) router.push('/input'); 
+  }, [analysis, hasHydrated, isAuthenticated, router]);
 
   const [isDeleting, setIsDeleting] = useState(false);
 

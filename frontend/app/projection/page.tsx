@@ -25,9 +25,12 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   return null;
 };
 
+import { useAuthStore } from '@/lib/auth-store';
+
 export default function ProjectionPage() {
   const router = useRouter();
   const { analysis } = usePerFinStore();
+  const { isAuthenticated } = useAuthStore();
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
@@ -36,8 +39,8 @@ export default function ProjectionPage() {
   }, []);
 
   useEffect(() => { 
-    if (hasHydrated && !analysis) router.push('/input'); 
-  }, [analysis, hasHydrated, router]);
+    if (hasHydrated && isAuthenticated && !analysis) router.push('/input'); 
+  }, [analysis, hasHydrated, isAuthenticated, router]);
   
   const [returnRate, setReturnRate] = useState(12);
   const [investRate, setInvestRate] = useState(70);

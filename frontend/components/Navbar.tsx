@@ -28,7 +28,7 @@ export default function Navbar() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => { logout(); router.push('/login'); setMobileMenuOpen(false); };
+  const handleLogout = () => { logout(); router.push('/'); setMobileMenuOpen(false); };
   const isActive = (href: string) => pathname === href;
 
   return (

@@ -26,9 +26,12 @@ const SUGGESTIONS = [
   'How to reduce my debt faster?',
 ];
 
+import { useAuthStore } from '@/lib/auth-store';
+
 export default function ChatPage() {
   const router = useRouter();
   const { analysis, profile } = usePerFinStore();
+  const { isAuthenticated } = useAuthStore();
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
@@ -53,12 +56,12 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Only redirect if hydration is definitely finished AND there is no profile
+  // Only redirect if hydration is definitely finished AND there is no profile AND authenticated
   useEffect(() => { 
-    if (hasHydrated && !profile) {
+    if (hasHydrated && isAuthenticated && !profile) {
       router.replace('/input'); 
     }
-  }, [profile, hasHydrated, router]);
+  }, [profile, hasHydrated, isAuthenticated, router]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 

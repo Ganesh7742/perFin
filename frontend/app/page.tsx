@@ -4,11 +4,11 @@ import { TrendingUp, BarChart3, Target, MessageCircle, ArrowRight, Shield } from
 import Navbar from '@/components/Navbar';
 
 const OLIVE = '#A35E47';
-const DEEP  = '#000000';
-const BG    = '#FAFAFA';
-const CARD  = '#FFFFFF';
-const BORDER= '#9C9A9A';
-const SEC   = '#464646';
+const DEEP = '#000000';
+const BG = '#FAFAFA';
+const CARD = '#FFFFFF';
+const BORDER = '#9C9A9A';
+const SEC = '#464646';
 const MUTED = '#9C9A9A';
 const LIGHT = '#E8DEDC';
 
@@ -39,7 +39,7 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', textAlign: 'center' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 28, padding: '4px 14px', borderRadius: 4, background: 'rgba(99,107,47,0.1)', border: `1px solid ${BORDER}` }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 28, padding: '4px 14px', borderRadius: 4, background: 'rgba(163,94,71,0.1)', border: `1px solid ${BORDER}` }}>
           <TrendingUp size={11} color={OLIVE} />
           <span style={{ fontSize: 10, fontWeight: 700, color: OLIVE, letterSpacing: '0.09em' }}>AI-POWERED FINANCIAL INTELLIGENCE</span>
         </div>
