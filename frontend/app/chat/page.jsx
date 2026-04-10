@@ -69,8 +69,8 @@ export default function ChatPage() {
       setMessages([{
         role: 'assistant',
         content: profile
-          ? `Hello ${profile.name}! I'm your PerFin AI assistant. I'm ready to help you with your finances or guide you through filing your ITR. Ask me anything!`
-          : `Hello! I'm your AI Financial Advisor. Please build your financial profile first to get personalized advice.`,
+          ? `Hello ${profile.name}! I'm PerFin AI, your personal financial advisor. I've analyzed your profile and I'm ready to help you optimize your investments, plan for your goals, or manage your taxes. What's on your mind today?`
+          : `Hello! I'm PerFin AI, your personal financial advisor. Please build your financial profile first so I can give you personalized advice on savings, investments, and taxes.`,
       }]);
     }
   }, [hasHydrated, profile, messages.length, activeConvId]);
@@ -277,7 +277,7 @@ export default function ChatPage() {
             </div>
             <div>
                 <h1 style={{ fontSize: 16, fontWeight: 700, color: DEEP }}>PerFin AI Assistant</h1>
-                <span style={{ fontSize: 11, color: MUTED }}>Filing ITR & Financial Planning</span>
+                <span style={{ fontSize: 11, color: MUTED }}>Personal Finance, Goals & Tax Advisor</span>
             </div>
             </div>
 
