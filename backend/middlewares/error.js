@@ -12,6 +12,7 @@ const errorHandler = (err, req, res, next) => {
   const response = {
     code: statusCode,
     message,
+    detail: message, // For compatibility with different frontend handlers
     ...(config.env === 'development' && { stack: err.stack }),
   };
 

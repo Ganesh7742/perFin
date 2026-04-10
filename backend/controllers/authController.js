@@ -79,7 +79,12 @@ const signup = catchAsync(async (req, res) => {
     password_hash: hashedPassword,
   });
 
-  await newUser.save();
+  try {
+    await newUser.save();
+  } catch (saveErr) {
+    console.error("Critical: User save failed:", saveErr);
+    throw saveErr;
+  }
 
   res.status(201).json({
     id: userId,

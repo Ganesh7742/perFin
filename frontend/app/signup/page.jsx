@@ -68,7 +68,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API_BASE_URL}/auth/signup`, {
+      await api.post(`auth/signup`, {
         email,
         password,
       });
@@ -92,7 +92,9 @@ export default function SignupPage() {
       }
 
     } catch (err) {
-      setError(err.response?.data?.detail || "Signup failed. Please try again later.");
+      console.error("Signup error:", err);
+      const msg = err.response?.data?.message || err.response?.data?.detail || "Signup failed. Please try again later.";
+      setError(msg);
     } finally {
       setIsLoading(false);
     }
