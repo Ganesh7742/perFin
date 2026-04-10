@@ -25,7 +25,7 @@ export default function GoalsPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [newGoal, setNewGoal] = useState({
-    goal_type: 'Luxury',
+    goal_type: '',
     target_amount: '',
     time_horizon_years: '',
     current_savings_for_goal: '0',
@@ -80,7 +80,7 @@ export default function GoalsPage() {
       const newAnalysis = await analyzeRes.json();
       setAnalysis(newAnalysis);
       setIsAdding(false);
-      setNewGoal({ goal_type: 'Luxury', target_amount: '', time_horizon_years: '', current_savings_for_goal: '0', monthly_investment: '0', priority: 'Medium' });
+      setNewGoal({ goal_type: '', target_amount: '', time_horizon_years: '', current_savings_for_goal: '0', monthly_investment: '0', priority: 'Medium' });
     } catch (err) {
       console.error("Failed to add goal:", err);
       alert("Something went wrong. Please try again.");
@@ -138,13 +138,13 @@ export default function GoalsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 20 }}>
               <div>
                 <label style={secLabel}>Goal Type</label>
-                <select 
+                <input 
+                  type="text" 
+                  placeholder="e.g. Dream Wedding"
                   value={newGoal.goal_type} 
                   onChange={e => setNewGoal({...newGoal, goal_type: e.target.value})}
                   style={{ width: '100%', padding: '10px', borderRadius: 6, border: `1px solid ${BORDER}`, marginTop: 6, fontSize: 14 }}
-                >
-                  {['House', 'Car', 'Marriage', 'Education', 'Retirement', 'Travel', 'Luxury', 'Medical', 'Other'].map(v => <option key={v}>{v}</option>)}
-                </select>
+                />
               </div>
               <div>
                 <label style={secLabel}>Target Amount (₹)</label>
