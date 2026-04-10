@@ -35,7 +35,9 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     usePerFinStore.persist.onFinishHydration(() => setHasHydrated(true));
