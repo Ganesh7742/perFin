@@ -35,8 +35,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     usePerFinStore.persist.onFinishHydration(() => setHasHydrated(true));
@@ -51,11 +50,15 @@ export default function ChatPage() {
   }, [hasHydrated, isAuthenticated]);
 
   const loadHistory = async () => {
+    setHistoryLoading(true);
     try {
       const data = await fetchChatHistory();
-      setHistory(data);
+      // Ensure data is an array
+      setHistory(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load chat history", err);
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -138,7 +141,14 @@ export default function ChatPage() {
     } finally { setLoading(false); }
   };
 
-  if (!hasHydrated || !profile) return null;
+  // Improved loading state
+  if (!hasHydrated || (isAuthenticated && !profile)) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: BG }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: OLIVE }} />
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: '100vh', background: BG, paddingTop: 64, display: 'flex', overflow: 'hidden' }}>
@@ -153,7 +163,7 @@ export default function ChatPage() {
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
-        borderRight: `1px solid ${DEEP}`,
+        borderRight: `1px solid #000`,
         position: 'relative'
       }}>
         <div style={{ padding: '20px 15px', display: 'flex', flexDirection: 'column', gap: 20, width: 260 }}>
@@ -170,57 +180,70 @@ export default function ChatPage() {
             fontSize: 13,
             fontWeight: 500,
             transition: 'background 0.2s'
-          }} onMouseEnter={e => e.target.style.background = '#333'} onMouseLeave={e => e.target.style.background = 'transparent'}>
+          }} onMouseEnter={e => e.currentTarget.style.background = '#333'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
             <Plus size={16} /> New Chat
           </button>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <p style={{ fontSize: 10, color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Recent History</p>
-            {history.map((chat) => (
-              <div key={chat._id} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 5,
-                background: activeConvId === chat._id ? 'rgba(163, 94, 71, 0.5)' : 'rgba(163, 94, 71, 0.1)',
-                border: activeConvId === chat._id ? '1px solid rgba(163, 94, 71, 0.8)' : '1px solid rgba(163, 94, 71, 0.3)',
-                borderRadius: 8,
-                paddingRight: 8,
-                transition: 'all 0.2s',
-                marginBottom: 4
-              }} className="history-item">
-                <button onClick={() => loadThread(chat._id)} style={{ 
+            
+            {historyLoading ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px', color: '#666' }}>
+                <Loader2 size={12} className="animate-spin" />
+                <span style={{ fontSize: 12 }}>Loading history...</span>
+              </div>
+            ) : history.length === 0 ? (
+              <div style={{ padding: '20px 10px', textAlign: 'center', color: '#666', border: '1px dashed #333', borderRadius: 8 }}>
+                <MessageSquare size={16} style={{ marginBottom: 8, opacity: 0.5 }} />
+                <p style={{ fontSize: 11 }}>No recent chats found</p>
+              </div>
+            ) : (
+              history.map((chat) => (
+                <div key={chat._id} style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: 10, 
-                  padding: '10px', 
-                  background: 'transparent',
-                  border: 'none', 
-                  color: '#EEE', 
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  flex: 1,
-                  fontSize: 13,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  <MessageSquare size={14} /> {chat.title}
-                </button>
-                <button onClick={(e) => handleDelete(e, chat._id)} style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#888',
-                  cursor: 'pointer',
-                  padding: "5px 8px",
-                  display: 'flex',
-                  alignItems: 'center',
-                  opacity: 0.5,
-                  transition: 'all 0.2s'
-                }} onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = '#FF5F5F'; }} onMouseLeave={e => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.color = '#888'; }}>
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
+                  gap: 5,
+                  background: activeConvId === chat._id ? 'rgba(163, 94, 71, 0.4)' : 'transparent',
+                  border: activeConvId === chat._id ? '1px solid rgba(163, 94, 71, 0.6)' : '1px solid transparent',
+                  borderRadius: 8,
+                  paddingRight: 8,
+                  transition: 'all 0.2s',
+                  marginBottom: 4
+                }} className="history-item">
+                  <button onClick={() => loadThread(chat._id)} style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 10, 
+                    padding: '10px', 
+                    background: 'transparent',
+                    border: 'none', 
+                    color: activeConvId === chat._id ? '#FFF' : '#AAA', 
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    flex: 1,
+                    fontSize: 13,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    <MessageSquare size={14} style={{ opacity: activeConvId === chat._id ? 1 : 0.6 }} /> {chat.title}
+                  </button>
+                  <button onClick={(e) => handleDelete(e, chat._id)} style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#888',
+                    cursor: 'pointer',
+                    padding: "5px 8px",
+                    display: 'flex',
+                    alignItems: 'center',
+                    opacity: 0.5,
+                    transition: 'all 0.2s'
+                  }} onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = '#FF5F5F'; }} onMouseLeave={e => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.color = '#888'; }}>
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
