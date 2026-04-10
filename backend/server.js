@@ -15,9 +15,24 @@ const uploadRoutes = require('./routes/upload');
 
 const app = express();
 
+// Allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://perfin.me',
+  'https://www.perfin.me',
+];
+
 // Security Middleware
 app.use(helmet());
-app.use(cors({ origin: config.env === 'production' ? false : true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, mobile apps, Render health checks)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '10mb' }));
 
 // Health check
